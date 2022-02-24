@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+<head th:replace="fragments/common :: head('Hello Spring !')">
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/common :: menu('home')">
+
+        </nav>
+    </header>
+
+    <!-- Begin page content -->
+    <main class="flex-shrink-0">
+        <div class="container">
+            <h1 class="mt-5">Spring Tutorial</h1>
+            <br>
+            <p class="lead">📌 Spring을 이용해 만든 Toy Board 웹 사이트</p>
+        </div>
+    </main>
+
+    <script src="/docs/5.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
