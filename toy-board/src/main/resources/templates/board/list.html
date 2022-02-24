@@ -8,7 +8,8 @@
 
     <header>
         <!-- Fixed navbar -->
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/common :: menu('board')">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+            th:replace="fragments/common :: menu('board')">
         </nav>
     </header>
 
@@ -16,7 +17,26 @@
     <main class="flex-shrink-0">
         <div class="container">
             <h1 class="mt-5">게시판</h1>
+            <br>
             <div>총 게시물 수 : <span th:text="${#lists.size(boards)}"></span></div>
+            <br>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">작성자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="board : ${boards}">
+                        <td th:text="${board.id}">번호</td>
+                        <td th:text="${board.title}">제목</td>
+                        <td>작성자</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" style="float:right;">글쓰기</button>
         </div>
     </main>
 
