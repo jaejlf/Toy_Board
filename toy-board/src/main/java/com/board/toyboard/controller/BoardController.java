@@ -2,6 +2,7 @@ package com.board.toyboard.controller;
 
 import com.board.toyboard.model.Board;
 import com.board.toyboard.repository.BoardRepository;
+import com.board.toyboard.validator.BoardValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,9 @@ public class BoardController {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private BoardValidator boardValidator;
 
     @GetMapping("/list")
     public String list(Model model) {
@@ -41,6 +45,7 @@ public class BoardController {
 
     @PostMapping("/form")
     public String formSubmit(@Valid Board board, BindingResult bindingResult) {
+        boardValidator.validate(board, bindingResult);
         if(bindingResult.hasErrors()){
             return "board/form";
         }
