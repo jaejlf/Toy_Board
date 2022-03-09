@@ -38,7 +38,7 @@
                     <tr th:each="board : ${boards}">
                         <td th:text="${board.id}">번호</td>
                         <td><a th:text="${board.title}" th:href="@{/board/form(id=${board.id})}">제목</a></td>
-                        <td>작성자</td>
+                        <td th:text="${board.user.username}">작성자</td>
                     </tr>
                 </tbody>
             </table>
