@@ -23,5 +23,9 @@ public class User {
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+
     private List<Role> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) //orphanRemoval = true -> 자식 엔티티 자동 삭제 (default = false)
+    private List<Board> boards = new ArrayList<>();
 }
