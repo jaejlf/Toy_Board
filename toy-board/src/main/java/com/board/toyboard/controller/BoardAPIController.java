@@ -3,6 +3,7 @@ package com.board.toyboard.controller;
 import com.board.toyboard.model.Board;
 import com.board.toyboard.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
@@ -59,6 +60,7 @@ class BoardAPIController {
     }
 
     // 게시글 삭제
+    @Secured("ROLE_ADMIN") // ROLE_ADMIN 사용자만 DELETE 요청할 수 있도록
     @DeleteMapping("/boards/{id}")
     void deleteBoard(@PathVariable Long id) {
         repository.deleteById(id);

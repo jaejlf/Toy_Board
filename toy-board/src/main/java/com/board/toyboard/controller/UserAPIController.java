@@ -3,6 +3,7 @@ package com.board.toyboard.controller;
 import com.board.toyboard.model.Board;
 import com.board.toyboard.model.User;
 import com.board.toyboard.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@Slf4j
 class UserAPIController {
 
     @Autowired
@@ -18,8 +20,11 @@ class UserAPIController {
     // 유저 검색 (현재 - 조건 X)
     @GetMapping("/users")
     List<User> all() {
-
-        return repository.findAll();
+        List<User> users = repository.findAll();
+        log.debug("getBoards().size() 호출전");
+        log.debug("getBoards().size() : {}", users.get(0).getBoards().size());
+        log.debug("getBoards().size() 호출후");
+        return users;
     }
 
     // 유저 정보 저장 (title + content)
@@ -46,7 +51,7 @@ class UserAPIController {
                     //user.setBoards(newUser.getBoards());
                     user.getBoards().clear();
                     user.getBoards().addAll(newUser.getBoards());
-                    for(Board board : user.getBoards()) {
+                    for (Board board : user.getBoards()) {
                         board.setUser(user);
                     }
                     return repository.save(user);
