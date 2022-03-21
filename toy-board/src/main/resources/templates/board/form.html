@@ -41,7 +41,7 @@
                 </div>
                 <a class="btn btn-outline-secondary" style="float:right; margin-left: 10px;"
                     th:href="@{/board/list}">취소</a>
-                <button type="submit" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ADMIN')"
+                <button type="button" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ADMIN')"
                     th:onclick="|deleteBoard(*{id})|" style="float:right; margin-left: 10px;">삭제</button>
                 <button type="submit" class="btn btn-secondary" style="float:right; margin-left: 10px;">확인</button>
             </form>
@@ -63,7 +63,7 @@
                     alert('삭제됐습니다');
                     window.location.href = '/board/list';
                 }
-            })
+            });
         }
     </script>
 
