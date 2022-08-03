@@ -18,8 +18,10 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-application-db.properties
-application-oauth.properties
+
+application-db.yml
+application-oauth.yml
+
 .idea
 *.iws
 *.iml
