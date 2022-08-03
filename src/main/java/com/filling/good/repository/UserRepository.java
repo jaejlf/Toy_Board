@@ -1,6 +1,6 @@
-package com.board.toyboard.repository;
+package com.filling.good.repository;
 
-import com.board.toyboard.model.User;
+import com.filling.good.model.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,4 +1,4 @@
-package com.board.toyboard.model;
+package com.filling.good.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

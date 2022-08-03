@@ -1,13 +1,13 @@
-package com.board.toyboard;
+package com.filling.good;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ToyBoardApplication {
+public class FillingGoodApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ToyBoardApplication.class, args);
+		SpringApplication.run(FillingGoodApplication.class, args);
 	}
 
 }

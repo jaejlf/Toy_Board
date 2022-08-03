@@ -1,7 +1,7 @@
-package com.board.toyboard.controller;
+package com.filling.good.controller;
 
-import com.board.toyboard.model.Board;
-import com.board.toyboard.repository.BoardRepository;
+import com.filling.good.model.Board;
+import com.filling.good.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;

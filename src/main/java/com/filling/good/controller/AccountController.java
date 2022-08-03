@@ -1,7 +1,7 @@
-package com.board.toyboard.controller;
+package com.filling.good.controller;
 
-import com.board.toyboard.model.User;
-import com.board.toyboard.service.UserService;
+import com.filling.good.model.User;
+import com.filling.good.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

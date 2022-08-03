@@ -1,6 +1,6 @@
-package com.board.toyboard.validator;
+package com.filling.good.validator;
 
-import com.board.toyboard.model.Board;
+import com.filling.good.model.Board;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

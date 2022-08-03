@@ -1,4 +1,4 @@
-package com.board.toyboard.config;
+package com.filling.good.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;

@@ -1,8 +1,8 @@
-package com.board.toyboard.controller;
+package com.filling.good.controller;
 
-import com.board.toyboard.model.Board;
-import com.board.toyboard.model.User;
-import com.board.toyboard.repository.UserRepository;
+import com.filling.good.model.Board;
+import com.filling.good.model.User;
+import com.filling.good.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

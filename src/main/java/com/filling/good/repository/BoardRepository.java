@@ -1,6 +1,6 @@
-package com.board.toyboard.repository;
+package com.filling.good.repository;
 
-import com.board.toyboard.model.Board;
+import com.filling.good.model.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

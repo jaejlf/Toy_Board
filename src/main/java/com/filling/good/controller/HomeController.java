@@ -1,4 +1,4 @@
-package com.board.toyboard.controller;
+package com.filling.good.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
