@@ -25,6 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/account/register", "/css/**", "/api/**").permitAll() //이 외의 페이지는 접근 권한 X
+                .antMatchers("/**").permitAll() // 테스트를 위한 전체 접근 허용
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
