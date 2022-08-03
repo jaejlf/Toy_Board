@@ -19,4 +19,4 @@ spring:
       hibernate:
         format_sql: 'true'
   profiles:
-    include: db
+    include: secret

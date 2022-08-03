@@ -19,8 +19,7 @@ bin/
 
 ### IntelliJ IDEA ###
 
-application-db.yml
-application-oauth.yml
+application-secret.yml
 
 .idea
 *.iws
