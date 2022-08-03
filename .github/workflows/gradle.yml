@@ -9,7 +9,9 @@ on:
 env:
   BUCKET_NAME: filling-deploy
   ZIP_FILE_NAME: filling-jar
-  
+  APP_NAME: filling-good-app
+  DEPLOY_GROUP: deploy-group
+
 permissions:
   contents: read
 
@@ -38,6 +40,9 @@ jobs:
     - name: Copy Jar
       run: cp ./build/libs/*.jar ./deploy
 
+    - name: Copy appspec.yml
+      run: cp appspec.yml ./deploy
+
     - name: Make zip file
       run: zip -r ./$ZIP_FILE_NAME.zip ./deploy
       shell: bash
@@ -51,3 +56,6 @@ jobs:
 
     - name: Upload to S3
       run: aws s3 cp --region ap-northeast-2 ./$ZIP_FILE_NAME.zip s3://$BUCKET_NAME/
+
+    - name: CodeDeploy
+      run: aws deploy create-deployment --application-name $APP_NAME --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name $DEPLOY_GROUP --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$ZIP_FILE_NAME.zip
