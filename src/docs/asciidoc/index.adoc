@@ -1,0 +1,13 @@
+ifndef::snippets[]
+:snippets: /FILLing_GOOD/build/generated-snippets
+endif::[]
+
+= 🐳 FILLing - GOOD
+
+== HELLO
+=== 언제나 "hello"를 리턴한다.
+operation::hello[snippets='httpie-request,response-fields,response-body']
+
+== BYE
+=== 사용자가 입력한 값을 리턴한다.
+operation::bye[snippets='httpie-request,path-parameters,response-fields,response-body']
