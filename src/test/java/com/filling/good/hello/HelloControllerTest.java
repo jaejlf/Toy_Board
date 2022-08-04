@@ -1,8 +1,7 @@
-package com.filling.good.common;
+package com.filling.good.hello;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.filling.good.TestConfig;
-import com.filling.good.hello.HelloController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
