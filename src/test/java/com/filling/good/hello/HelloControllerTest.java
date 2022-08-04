@@ -43,7 +43,7 @@ class HelloControllerTest {
 
     @Test
     @DisplayName("hello 테스트")
-    public void hello() throws Exception{
+    public void hello() throws Exception {
 
         //given
         Map<String, String> map = new HashMap<>();

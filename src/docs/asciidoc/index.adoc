@@ -5,28 +5,9 @@ endif::[]
 = 🐳 FILLing - GOOD
 
 == HELLO
-
 === 언제나 "hello"를 리턴한다.
-
-=== Request
-include::{snippets}/hello/httpie-request.adoc[]
-
-=== Input
-include::{snippets}/hello/response-fields.adoc[]
-
-=== Response
-include::{snippets}/hello/response-body.adoc[]
+operation::hello[snippets='httpie-request,response-fields,response-body']
 
 == BYE
-
 === 사용자가 입력한 값을 리턴한다.
-
-=== Request
-include::{snippets}/bye/httpie-request.adoc[]
-
-=== Input
-include::{snippets}/bye/path-parameters.adoc[]
-include::{snippets}/bye/response-fields.adoc[]
-
-=== Response
-include::{snippets}/bye/response-body.adoc[]
+operation::bye[snippets='httpie-request,path-parameters,response-fields,response-body']

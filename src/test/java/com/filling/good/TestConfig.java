@@ -15,4 +15,5 @@ public class TestConfig {
                 .withRequestDefaults(prettyPrint())
                 .withResponseDefaults(prettyPrint());
     }
+
 }
