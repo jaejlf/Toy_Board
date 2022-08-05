@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 
@@ -17,8 +19,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    @Column(name = "user_id")
-    private Long id;
+    private Long userId;
     private String password;
 
     @Email
@@ -28,17 +29,25 @@ public class User {
     @Column(unique = true)
     private String nickname;
 
-    private boolean enabled;
-    private int ban;
-    private Long fillPercent;
+    private boolean enabled = true;
+    private int ban = 0;
+    private Long fillPercent = 0L;
 
     @Enumerated(EnumType.STRING)
     private Job job;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.ROLE_USER;
 
     @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+    private AuthProvider authProvider;
+
+    public User(String email, String password, String nickname, Job job, AuthProvider authProvider) {
+        this.email = email;
+        this.password = new BCryptPasswordEncoder().encode(password);
+        this.nickname = nickname;
+        this.job = job;
+        this.authProvider = authProvider;
+    }
 
 }
