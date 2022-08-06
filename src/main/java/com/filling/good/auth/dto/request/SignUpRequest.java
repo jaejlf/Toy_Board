@@ -1,5 +1,6 @@
 package com.filling.good.auth.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,7 +8,8 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class AuthRequest {
+@AllArgsConstructor
+public class SignUpRequest {
 
     @NotBlank String email;
     @NotBlank String password;

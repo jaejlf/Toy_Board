@@ -6,15 +6,17 @@ import com.filling.good.user.enumerate.Role;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.Collection;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -43,10 +45,35 @@ public class User {
 
     public User(String email, String password, String nickname, Job job, AuthProvider authProvider) {
         this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
+        this.password = password;
         this.nickname = nickname;
         this.job = job;
         this.authProvider = authProvider;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return enabled;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return enabled;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return enabled;
     }
 
 }

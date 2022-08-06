@@ -2,8 +2,8 @@ package com.filling.good.auth.controller;
 
 import com.filling.good.common.CommonTest;
 import com.filling.good.common.TestConfig;
-import com.filling.good.auth.dto.request.AuthRequest;
-import com.filling.good.auth.dto.response.AuthResponse;
+import com.filling.good.auth.dto.request.SignUpRequest;
+import com.filling.good.user.dto.response.UserResponse;
 import com.filling.good.auth.service.AuthService;
 import com.filling.good.user.enumerate.Job;
 import org.junit.jupiter.api.DisplayName;
@@ -32,22 +32,22 @@ class AuthControllerTest extends CommonTest {
     private AuthService authService;
 
     @Test
-    @DisplayName("회원가입에 성공한다.")
+    @DisplayName("회원가입 성공")
     void join_test() throws Exception {
 
         //given
-        AuthRequest authRequest = new AuthRequest(
+        SignUpRequest signUpRequest = new SignUpRequest(
                 "fill@naver.com",
                 "secret1234",
                 "필링굿",
                 "학생"
         );
 
-        given(authService.save(any())).willReturn(joinWillReturnDto(authRequest));
+        given(authService.join(any())).willReturn(joinWillReturnDto(signUpRequest));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/join")
-                .content(objectMapper.writeValueAsString(authRequest))
+                .content(objectMapper.writeValueAsString(signUpRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
         //then
@@ -74,11 +74,11 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    private AuthResponse joinWillReturnDto(AuthRequest authRequest) {
-        return AuthResponse.builder()
+    private UserResponse joinWillReturnDto(SignUpRequest signUpRequest) {
+        return UserResponse.builder()
                 .userId(1L)
-                .email(authRequest.getEmail())
-                .nickname(authRequest.getNickname())
+                .email(signUpRequest.getEmail())
+                .nickname(signUpRequest.getNickname())
                 .fillPercent(0L)
                 .job(Job.STUDENT)
                 .build();
