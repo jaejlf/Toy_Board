@@ -22,7 +22,7 @@ public class AuthController {
     @PostMapping("/join")
     public ResponseEntity<Object> join(@RequestBody AuthRequest authRequest) {
         AuthResponse user = authService.save(authRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(ResultResponse.create("회원 가입 완료", user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.create("회원 가입 완료", user));
     }
 
 }

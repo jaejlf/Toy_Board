@@ -1,6 +1,6 @@
 package com.filling.good.hello;
 
-import com.filling.good.TestConfig;
+import com.filling.good.common.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

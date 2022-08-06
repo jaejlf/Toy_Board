@@ -1,9 +1,12 @@
 package com.filling.good.common.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class ResultResponse<T> {
 
     private static final int OK = 200;
@@ -12,13 +15,6 @@ public class ResultResponse<T> {
     private int statusCode;
     private String message;
     private T data;
-
-    @Builder
-    public ResultResponse(int statusCode, String message, T data) {
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
-    }
 
     public static <T> ResultResponse<Object> success(String msg, T data) {
         return ResultResponse.builder()

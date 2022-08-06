@@ -2,7 +2,7 @@ package com.filling.good.auth.service;
 
 import com.filling.good.auth.dto.request.AuthRequest;
 import com.filling.good.auth.dto.response.AuthResponse;
-import com.filling.good.auth.exception.ExUserException;
+import com.filling.good.auth.exception.DuplicateUserException;
 import com.filling.good.user.entity.User;
 import com.filling.good.user.enumerate.AuthProvider;
 import com.filling.good.user.enumerate.Job;
@@ -24,8 +24,9 @@ public class AuthService {
     public AuthResponse save(AuthRequest authRequest) {
 
         if(userRepository.findByEmail(authRequest.getEmail()).isPresent()) {
-            throw new ExUserException();
+            throw new DuplicateUserException();
         }
+
         Job jobCode = Job.findJobCode(authRequest.getJobValue());
         User user = new User(
                 authRequest.getEmail(),

@@ -1,4 +1,4 @@
-package com.filling.good;
+package com.filling.good.common;
 
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsMockMvcConfigurationCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
