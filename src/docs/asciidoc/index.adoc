@@ -2,12 +2,12 @@ ifndef::snippets[]
 :snippets: /FILLing_GOOD/build/generated-snippets
 endif::[]
 
-= 🐳 FILLing - GOOD
+= 💬 FILLing - GOOD
 
-== HELLO
-=== 언제나 "hello"를 리턴한다.
-operation::hello[snippets='httpie-request,response-fields,response-body']
+== 회원가입
+operation::auth-join[snippets='http-request,http-response']
+operation::auth-join[snippets='request-fields,response-fields']
 
-== BYE
-=== 사용자가 입력한 값을 리턴한다.
-operation::bye[snippets='httpie-request,path-parameters,response-fields,response-body']
+== 로그인
+operation::auth-login[snippets='http-request,http-response']
+operation::auth-login[snippets='request-fields,response-fields']
