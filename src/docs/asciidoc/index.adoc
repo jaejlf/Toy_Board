@@ -4,11 +4,17 @@ endif::[]
 
 = 💬 FILLing - GOOD
 
-== 유저
-=== 회원가입
-operation::auth-join[snippets='http-request,http-response']
-operation::auth-join[snippets='request-fields,response-fields']
+== [Auth] 회원가입
+operation::auth_join[snippets='http-request,http-response']
+operation::auth_join[snippets='request-fields,response-fields']
 
-=== 로그인
-operation::auth-login[snippets='http-request,http-response']
-operation::auth-login[snippets='request-fields,response-fields']
+=== Exception response
+include::{snippets}/auth_join_DuplicateUserException/http-response.adoc[]
+
+== [Auth] 로그인
+operation::auth_login[snippets='http-request,http-response']
+operation::auth_login[snippets='request-fields,response-fields']
+
+=== Exception response
+include::{snippets}/auth_login_PasswordErrorException/http-response.adoc[]
+include::{snippets}/auth_login_UserNotFoundException/http-response.adoc[]

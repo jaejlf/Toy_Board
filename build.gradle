@@ -73,8 +73,10 @@ asciidoctor {
     dependsOn test
     attributes \
         'build-gradle': file('build.gradle'),
+            'doctype': 'book',
             'source-highlighter': 'highlightjs',
             'toc': 'left',
+            'toclevels': 1,
             'icons': 'font'
 }
 
