@@ -12,6 +12,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(uriHost = "FILLing-GOOD-URL", uriPort = 8080)
@@ -25,7 +27,11 @@ public class CommonTest {
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .apply(documentationConfiguration(restDoc))
+                .apply(documentationConfiguration(restDoc)
+                        .operationPreprocessors()
+                        .withRequestDefaults(modifyUris().host("FILLing-GOOD-URL").removePort(), prettyPrint())
+                        .withResponseDefaults(prettyPrint())
+                )
                 .build();
     }
 
