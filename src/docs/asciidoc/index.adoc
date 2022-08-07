@@ -4,10 +4,11 @@ endif::[]
 
 = 💬 FILLing - GOOD
 
-== 회원가입
+== 유저
+=== 회원가입
 operation::auth-join[snippets='http-request,http-response']
 operation::auth-join[snippets='request-fields,response-fields']
 
-== 로그인
+=== 로그인
 operation::auth-login[snippets='http-request,http-response']
 operation::auth-login[snippets='request-fields,response-fields']
