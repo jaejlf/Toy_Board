@@ -1,6 +1,6 @@
 package com.filling.good.auth.dto.response;
 
-import com.filling.good.user.entity.User;
+import com.filling.good.user.dto.response.UserResponse;
 import com.filling.good.user.enumerate.AuthProvider;
 import com.filling.good.user.enumerate.Job;
 import lombok.Builder;
@@ -18,7 +18,7 @@ public class LoginResponse {
     AuthProvider authProvider;
     String accessToken;
 
-    public static LoginResponse res(User user, String token) {
+    public static LoginResponse of(UserResponse user, String token) {
         return LoginResponse.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())

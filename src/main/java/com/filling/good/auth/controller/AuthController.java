@@ -7,7 +7,6 @@ import com.filling.good.auth.dto.response.LoginResponse;
 import com.filling.good.auth.service.AuthService;
 import com.filling.good.common.dto.ResultResponse;
 import com.filling.good.user.dto.response.UserResponse;
-import com.filling.good.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +33,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
-        User user = authService.login(loginRequest);
+        UserResponse user = authService.login(loginRequest);
         String token = jwtTokenProvider.createAccessToken(user.getEmail());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ResultResponse.success("로그인 성공", LoginResponse.res(user, token)));
+                .body(ResultResponse.success("로그인 성공", LoginResponse.of(user, token)));
     }
 
 }

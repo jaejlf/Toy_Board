@@ -1,5 +1,6 @@
 package com.filling.good.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.filling.good.user.enumerate.AuthProvider;
 import com.filling.good.user.enumerate.Job;
 import com.filling.good.user.enumerate.Role;
@@ -52,26 +53,31 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return enabled;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return enabled;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return enabled;
     }

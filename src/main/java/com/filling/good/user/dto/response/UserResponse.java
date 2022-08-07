@@ -17,7 +17,7 @@ public class UserResponse {
     Job job;
     AuthProvider authProvider;
 
-    public static UserResponse res(User user) {
+    public static UserResponse of(User user) {
         return UserResponse.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())

@@ -32,7 +32,6 @@ public class AuthService {
             throw new DuplicateUserException();
         }
 
-        //Job jobCode = Job.findJobCode(signUpRequest.getJobValue());
         User user = new User(
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
@@ -41,12 +40,12 @@ public class AuthService {
                 AuthProvider.DEFAULT
         );
 
-        return UserResponse.res(userRepository.save(user));
+        return UserResponse.of(userRepository.save(user));
 
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public User login(LoginRequest loginRequest) {
+    public UserResponse login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(UserNotFoundException::new);
@@ -55,7 +54,7 @@ public class AuthService {
             throw new PasswordErrorException();
         }
 
-        return user;
+        return UserResponse.of(user);
 
     }
 
