@@ -23,4 +23,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> customExceptionHandler(CustomException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getErrorResponse());
     }
+
 }

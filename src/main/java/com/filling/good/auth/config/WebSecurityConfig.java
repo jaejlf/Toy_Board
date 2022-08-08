@@ -34,7 +34,6 @@ public class WebSecurityConfig {
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
 
 }

@@ -39,7 +39,6 @@ class AuthControllerTest extends CommonTest {
 
     @Test
     void 회원가입_성공() throws Exception {
-
         //given
         SignUpRequest signUpRequest = new SignUpRequest(
                 "fill@naver.com",
@@ -82,7 +81,6 @@ class AuthControllerTest extends CommonTest {
 
     @Test
     void 회원가입_실패_중복_회원() throws Exception {
-
         //given
         SignUpRequest signUpRequest = new SignUpRequest(
                 "fill@naver.com",
@@ -120,7 +118,6 @@ class AuthControllerTest extends CommonTest {
 
     @Test
     void 로그인_성공() throws Exception {
-
         //given
         LoginRequest loginRequest = new LoginRequest(
                 "fill@naver.com",
@@ -161,7 +158,6 @@ class AuthControllerTest extends CommonTest {
 
     @Test
     void 로그인_실패_가입되지_않은_유저() throws Exception {
-
         //given
         LoginRequest loginRequest = new LoginRequest(
                 "fill@naver.com",
@@ -195,7 +191,6 @@ class AuthControllerTest extends CommonTest {
 
     @Test
     void 로그인_실패_비밀번호_오류() throws Exception {
-
         //given
         LoginRequest loginRequest = new LoginRequest(
                 "fill@naver.com",
