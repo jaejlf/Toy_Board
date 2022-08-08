@@ -27,11 +27,7 @@ public class AuthService {
 
     @Transactional(rollbackOn = {Exception.class})
     public UserResponse join(SignUpRequest signUpRequest) {
-
-        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
-            throw new DuplicateUserException();
-        }
-
+        validateDuplicateUser(signUpRequest);
         User user = new User(
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
@@ -41,21 +37,36 @@ public class AuthService {
         );
 
         return UserResponse.of(userRepository.save(user));
-
     }
 
     @Transactional(rollbackOn = {Exception.class})
     public UserResponse login(LoginRequest loginRequest) {
+        User user = getCheckedUser(loginRequest);
+        checkPassword(loginRequest, user);
 
-        User user = userRepository.findByEmail(loginRequest.getEmail())
+        return UserResponse.of(user);
+    }
+
+
+    /*
+    Extract Method
+    */
+
+    private void validateDuplicateUser(SignUpRequest signUpRequest) {
+        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+            throw new DuplicateUserException();
+        }
+    }
+
+    private User getCheckedUser(LoginRequest loginRequest) {
+        return userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(UserNotFoundException::new);
+    }
 
+    private void checkPassword(LoginRequest loginRequest, User user) {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new PasswordErrorException();
         }
-
-        return UserResponse.of(user);
-
     }
 
 }
