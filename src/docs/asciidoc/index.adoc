@@ -18,3 +18,10 @@ operation::auth_login[snippets='request-fields,response-fields']
 === Exception response
 include::{snippets}/auth_login_PasswordErrorException/http-response.adoc[]
 include::{snippets}/auth_login_UserNotFoundException/http-response.adoc[]
+
+== [Auth] 토큰 재발급
+operation::auth_reissue[snippets='http-request,http-response']
+operation::auth_reissue[snippets='request-fields,response-fields']
+
+=== Exception response
+include::{snippets}/auth_reissue_ExpiredRefreshTokenException/http-response.adoc[]
