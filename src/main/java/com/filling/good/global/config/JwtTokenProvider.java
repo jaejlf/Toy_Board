@@ -1,6 +1,7 @@
 package com.filling.good.global.config;
 
 import com.filling.good.domain.user.exception.InvalidTokenException;
+import com.filling.good.global.service.RedisService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 
@@ -22,10 +24,14 @@ public class JwtTokenProvider {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-    @Value("${jwt.token.valid.time}")
-    private long tokenValidTime;
+    @Value("${jwt.access.token.valid.time}")
+    private long accessTokenValidTime;
+
+    @Value("${jwt.refresh.token.valid.time}")
+    private long refreshTokenValidTime;
 
     private final UserDetailsService userDetailsService;
+    private final RedisService redisService;
 
     @PostConstruct
     protected void init() {
@@ -33,6 +39,16 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String email) {
+        return createToken(email, accessTokenValidTime);
+    }
+
+    public String createRefreshToken(String email) {
+        String refreshToken = createToken(email, refreshTokenValidTime);
+        redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
+        return refreshToken;
+    }
+
+    public String createToken(String email, Long tokenValidTime) {
         Claims claims = Jwts.claims().setSubject(email);
         Date now = new Date();
         return Jwts.builder()
@@ -65,6 +81,12 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             throw new InvalidTokenException();
         }
+    }
+
+    public Long calValidTime(String jwtToken) {
+        Date now = new Date();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        return claims.getBody().getExpiration().getTime() - now.getTime();
     }
 
 }

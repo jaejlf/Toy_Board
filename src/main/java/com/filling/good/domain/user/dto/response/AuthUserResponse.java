@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserResponse {
+public class AuthUserResponse {
 
     Long userId;
     String email;
@@ -16,15 +16,19 @@ public class UserResponse {
     Long fillPercent;
     Job job;
     AuthProvider authProvider;
+    String accessToken;
+    String refreshToken;
 
-    public static UserResponse of(User user) {
-        return UserResponse.builder()
+    public static AuthUserResponse of(User user, String accessToken, String refreshToken) {
+        return AuthUserResponse.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .fillPercent(user.getFillPercent())
                 .job(user.getJob())
                 .authProvider(user.getAuthProvider())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
