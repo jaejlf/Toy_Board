@@ -53,6 +53,9 @@ dependencies {
 
     //jjwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 ext {
@@ -73,8 +76,10 @@ asciidoctor {
     dependsOn test
     attributes \
         'build-gradle': file('build.gradle'),
+            'doctype': 'book',
             'source-highlighter': 'highlightjs',
             'toc': 'left',
+            'toclevels': 1,
             'icons': 'font'
 }
 

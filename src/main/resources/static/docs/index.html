@@ -437,19 +437,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="book toc2 toc-left">
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel0">
 <li><a href="#_filling_good">💬 FILLing - GOOD</a>
 <ul class="sectlevel1">
-<li><a href="#_유저">유저</a>
-<ul class="sectlevel2">
-<li><a href="#_회원가입">회원가입</a></li>
-<li><a href="#_로그인">로그인</a></li>
-</ul>
-</li>
+<li><a href="#_auth_회원가입">[Auth] 회원가입</a></li>
+<li><a href="#_auth_로그인">[Auth] 로그인</a></li>
 </ul>
 </li>
 </ul>
@@ -458,12 +454,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="content">
 <h1 id="_filling_good" class="sect0">💬 FILLing - GOOD</h1>
 <div class="sect1">
-<h2 id="_유저">유저</h2>
+<h2 id="_auth_회원가입">[Auth] 회원가입</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_회원가입">회원가입</h3>
-<div class="sect3">
-<h4 id="_회원가입_http_request">HTTP request</h4>
+<h3 id="_auth_회원가입_http_request">HTTP request</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /auth/join HTTP/1.1
@@ -480,8 +474,8 @@ Host: FILLing-GOOD-URL
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_회원가입_http_response">HTTP response</h4>
+<div class="sect2">
+<h3 id="_auth_회원가입_http_response">HTTP response</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
@@ -503,8 +497,8 @@ Content-Length: 248
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_회원가입_request_fields">Request fields</h4>
+<div class="sect2">
+<h3 id="_auth_회원가입_request_fields">Request fields</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -542,8 +536,8 @@ Content-Length: 248
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_회원가입_response_fields">Response fields</h4>
+<div class="sect2">
+<h3 id="_auth_회원가입_response_fields">Response fields</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -601,11 +595,29 @@ Content-Length: 248
 </tbody>
 </table>
 </div>
-</div>
 <div class="sect2">
-<h3 id="_로그인">로그인</h3>
-<div class="sect3">
-<h4 id="_로그인_http_request">HTTP request</h4>
+<h3 id="_exception_response">Exception response</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 409 Conflict
+Content-Type: application/json;charset=UTF-8
+Content-Length: 119
+
+{
+  "statusCode" : 409,
+  "errName" : "DuplicateUserException",
+  "message" : "이미 가입된 유저입니다."
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_auth_로그인">[Auth] 로그인</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_auth_로그인_http_request">HTTP request</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /auth/login HTTP/1.1
@@ -620,8 +632,8 @@ Host: FILLing-GOOD-URL
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_로그인_http_response">HTTP response</h4>
+<div class="sect2">
+<h3 id="_auth_로그인_http_response">HTTP response</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
@@ -644,8 +656,8 @@ Content-Length: 271
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_로그인_request_fields">Request fields</h4>
+<div class="sect2">
+<h3 id="_auth_로그인_request_fields">Request fields</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -673,8 +685,8 @@ Content-Length: 271
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="_로그인_response_fields">Response fields</h4>
+<div class="sect2">
+<h3 id="_auth_로그인_response_fields">Response fields</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -737,6 +749,34 @@ Content-Length: 271
 </tbody>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_exception_response_2">Exception response</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Content-Type: application/json;charset=UTF-8
+Content-Length: 119
+
+{
+  "statusCode" : 400,
+  "errName" : "PasswordErrorException",
+  "message" : "잘못된 비밀번호 입니다."
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+Content-Length: 121
+
+{
+  "statusCode" : 404,
+  "errName" : "UserNotFoundException",
+  "message" : "가입되지 않은 유저입니다."
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -744,7 +784,7 @@ Content-Length: 271
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2022-08-07 16:12:10 +0900
+Last updated 2022-08-07 20:40:46 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
