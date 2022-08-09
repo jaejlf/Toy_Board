@@ -1,3 +1,7 @@
+### Fill Good ###
+application-secret.yml
+/BOOT-INF/
+
 HELP.md
 .gradle
 build/
@@ -18,9 +22,6 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-
-application-secret.yml
-
 .idea
 *.iws
 *.iml
