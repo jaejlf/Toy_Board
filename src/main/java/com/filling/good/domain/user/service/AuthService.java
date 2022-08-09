@@ -4,6 +4,7 @@ import com.filling.good.domain.user.dto.request.LoginRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
 import com.filling.good.domain.user.dto.request.TokenRequest;
 import com.filling.good.domain.user.dto.response.AuthUserResponse;
+import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.entity.User;
 import com.filling.good.domain.user.enumerate.Job;
 import com.filling.good.domain.user.exception.DuplicateUserException;
@@ -31,7 +32,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional(rollbackOn = {Exception.class})
-    public AuthUserResponse join(SignUpRequest signUpRequest) {
+    public UserResponse join(SignUpRequest signUpRequest) {
         validateDuplicateUser(signUpRequest);
         User user = new User(
                 signUpRequest.getEmail(),
@@ -41,7 +42,7 @@ public class AuthService {
                 DEFAULT
         );
 
-        return AuthUserResponse.of(userRepository.save(user), "", "");
+        return UserResponse.of(userRepository.save(user));
     }
 
     @Transactional(rollbackOn = {Exception.class})

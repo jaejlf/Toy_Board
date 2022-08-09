@@ -16,7 +16,7 @@ public class ResultResponse<T> {
     private String message;
     private T data;
 
-    public static <T> ResultResponse<Object> success(String msg, T data) {
+    public static <T> ResultResponse<Object> ok(String msg, T data) {
         return ResultResponse.builder()
                 .statusCode(OK)
                 .message(msg)

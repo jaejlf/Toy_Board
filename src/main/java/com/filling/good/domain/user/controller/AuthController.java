@@ -4,6 +4,7 @@ import com.filling.good.domain.user.dto.request.LoginRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
 import com.filling.good.domain.user.dto.request.TokenRequest;
 import com.filling.good.domain.user.dto.response.AuthUserResponse;
+import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.service.AuthService;
 import com.filling.good.global.dto.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/join")
     public ResponseEntity<Object> join(@RequestBody SignUpRequest signUpRequest) {
-        AuthUserResponse user = authService.join(signUpRequest);
+        UserResponse user = authService.join(signUpRequest);
         return ResponseEntity
                 .status(CREATED)
                 .body(ResultResponse.create("회원 가입 성공", user));
@@ -33,7 +34,7 @@ public class AuthController {
         AuthUserResponse user = authService.login(loginRequest);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.success("로그인 성공", user));
+                .body(ResultResponse.ok("로그인 성공", user));
     }
 
     @GetMapping("/reissue")
@@ -41,7 +42,7 @@ public class AuthController {
         AuthUserResponse user = authService.tokenReIssue(tokenRequest);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.success("토큰 재발급 완료", user));
+                .body(ResultResponse.ok("토큰 재발급 완료", user));
     }
 
 }

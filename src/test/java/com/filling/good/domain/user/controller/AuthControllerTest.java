@@ -5,6 +5,7 @@ import com.filling.good.domain.user.dto.request.LoginRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
 import com.filling.good.domain.user.dto.request.TokenRequest;
 import com.filling.good.domain.user.dto.response.AuthUserResponse;
+import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.exception.DuplicateUserException;
 import com.filling.good.domain.user.exception.ExpiredRefreshTokenException;
 import com.filling.good.domain.user.exception.PasswordErrorException;
@@ -47,7 +48,7 @@ class AuthControllerTest extends CommonTest {
                 "학생"
         );
 
-        given(authService.join(any())).willReturn(authUserResponse());
+        given(authService.join(any())).willReturn(userResponse());
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/join")
@@ -74,9 +75,7 @@ class AuthControllerTest extends CommonTest {
                                 fieldWithPath("data.nickname").description("닉네임"),
                                 fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
                                 fieldWithPath("data.job").description("직업"),
-                                fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰 (초기값 \"\")"),
-                                fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (초기값 \"\")")
+                                fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)")
                         ))
                 );
     }
@@ -315,8 +314,20 @@ class AuthControllerTest extends CommonTest {
                 .fillPercent(0L)
                 .job(STUDENT)
                 .authProvider(DEFAULT)
-                .accessToken("")
-                .refreshToken("")
+                .accessToken("ACCESS_TOKEN")
+                .refreshToken("REFRESH_TOKEN")
+                .build();
+
+    }
+
+    private UserResponse userResponse() {
+        return UserResponse.builder()
+                .userId(1L)
+                .email("fill@naver.com")
+                .nickname("필링굿")
+                .fillPercent(0L)
+                .job(STUDENT)
+                .authProvider(DEFAULT)
                 .build();
 
     }
