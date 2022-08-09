@@ -1,9 +1,11 @@
 package com.filling.good;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.filling.good.global.Interceptor.AuthenticationInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +23,9 @@ public class CommonTest {
 
     public MockMvc mockMvc;
     public ObjectMapper objectMapper = new ObjectMapper();
+
+    @MockBean
+    public AuthenticationInterceptor authenticationInterceptor;
 
     @BeforeEach
     public void setUp(WebApplicationContext wac, RestDocumentationContextProvider restDoc) {
