@@ -20,3 +20,4 @@ spring:
         format_sql: 'true'
   profiles:
     include: secret
+    active: ${profile}

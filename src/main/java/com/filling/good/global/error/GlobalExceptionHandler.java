@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    //default 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> defaultExceptionHandler(Exception e) {
+        log.error("[" + e.getClass().getSimpleName() + "] " + e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.error(500, e.getClass().getSimpleName(), e.getMessage()));
@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Object> customExceptionHandler(CustomException e) {
+        log.error("[" + e.getErrorResponse().getErrName() + "] " + e.getErrorResponse().getMessage());
         return ResponseEntity.status(e.getStatus()).body(e.getErrorResponse());
     }
 
