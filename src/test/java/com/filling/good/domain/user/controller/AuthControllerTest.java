@@ -6,21 +6,23 @@ import com.filling.good.domain.user.dto.request.SignUpRequest;
 import com.filling.good.domain.user.dto.request.TokenRequest;
 import com.filling.good.domain.user.dto.response.AuthUserResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
-import com.filling.good.domain.user.exception.DuplicateUserException;
-import com.filling.good.domain.user.exception.ExpiredRefreshTokenException;
-import com.filling.good.domain.user.exception.PasswordErrorException;
-import com.filling.good.domain.user.exception.UserNotFoundException;
+import com.filling.good.domain.user.exception.CustomJwtException;
 import com.filling.good.domain.user.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.ResultActions;
+
+import javax.persistence.EntityExistsException;
 
 import static com.filling.good.domain.user.enumerate.AuthProvider.DEFAULT;
 import static com.filling.good.domain.user.enumerate.Job.STUDENT;
+import static com.filling.good.global.error.ErrorMessage.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -91,7 +93,7 @@ class AuthControllerTest extends CommonTest {
                 "학생"
         );
 
-        given(authService.join(any())).willThrow(new DuplicateUserException());
+        given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/join")
@@ -101,7 +103,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("errName").value("DuplicateUserException"))
+                .andExpect(jsonPath("errName").value("EntityExistsException"))
                 .andDo(print())
                 .andDo(document("auth_join_DuplicateUserException",
                         requestFields(
@@ -168,7 +170,7 @@ class AuthControllerTest extends CommonTest {
                 "secret1234"
         );
 
-        given(authService.login(any())).willThrow(new UserNotFoundException());
+        given(authService.login(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -178,7 +180,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("errName").value("UserNotFoundException"))
+                .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
                 .andDo(print())
                 .andDo(document("auth_login_UserNotFoundException",
                         requestFields(
@@ -202,7 +204,7 @@ class AuthControllerTest extends CommonTest {
                 "secret1234"
         );
 
-        given(authService.login(any())).willThrow(new PasswordErrorException());
+        given(authService.login(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -212,7 +214,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("errName").value("PasswordErrorException"))
+                .andExpect(jsonPath("errName").value("IllegalArgumentException"))
                 .andDo(print())
                 .andDo(document("auth_login_PasswordErrorException",
                         requestFields(
@@ -277,7 +279,7 @@ class AuthControllerTest extends CommonTest {
                 "MOCK_REFRESH_TOKEN"
         );
 
-        given(authService.tokenReIssue(any())).willThrow(new ExpiredRefreshTokenException());
+        given(authService.tokenReIssue(any())).willThrow(new CustomJwtException(FORBIDDEN, "리프레쉬 토큰"));
 
         //when
         ResultActions actions = mockMvc.perform(get("/auth/reissue")
@@ -287,7 +289,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("errName").value("ExpiredRefreshTokenException"))
+                .andExpect(jsonPath("errName").value("ExpiredJwtException"))
                 .andDo(print())
                 .andDo(document("auth_reissue_ExpiredRefreshTokenException",
                         requestFields(

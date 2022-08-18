@@ -24,7 +24,6 @@ public class ResultResponse<T> {
                 .build();
     }
 
-
     public static <T> ResultResponse<Object> create(String message, T data) {
         return ResultResponse.builder()
                 .statusCode(CREATED)

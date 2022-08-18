@@ -7,20 +7,21 @@ import com.filling.good.domain.user.dto.response.AuthUserResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.entity.User;
 import com.filling.good.domain.user.enumerate.Job;
-import com.filling.good.domain.user.exception.DuplicateUserException;
-import com.filling.good.domain.user.exception.ExpiredRefreshTokenException;
-import com.filling.good.domain.user.exception.PasswordErrorException;
-import com.filling.good.domain.user.exception.UserNotFoundException;
+import com.filling.good.domain.user.exception.CustomJwtException;
 import com.filling.good.domain.user.repository.UserRepository;
 import com.filling.good.global.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 
 import static com.filling.good.domain.user.enumerate.AuthProvider.DEFAULT;
+import static com.filling.good.global.error.ErrorMessage.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
 @RequiredArgsConstructor
@@ -71,18 +72,18 @@ public class AuthService {
 
     private void validateDuplicateUser(SignUpRequest signUpRequest) {
         if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
-            throw new DuplicateUserException();
+            throw new EntityExistsException(USER_ALREADY_EXIST.getMsg());
         }
     }
 
     private User getCheckedUser(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
     }
 
     private void checkPassword(LoginRequest loginRequest, User user) {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new PasswordErrorException();
+            throw new IllegalArgumentException(PASSWORD_ERROR.getMsg());
         }
     }
 
@@ -90,7 +91,7 @@ public class AuthService {
         String refreshToken = tokenRequest.getRefreshToken();
         String email = tokenRequest.getEmail();
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new ExpiredRefreshTokenException();
+            throw new CustomJwtException(FORBIDDEN, "리프레쉬 토큰");
         }
 
         Long remainTime = jwtTokenProvider.calValidTime(refreshToken);
