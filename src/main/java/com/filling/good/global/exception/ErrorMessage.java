@@ -1,4 +1,4 @@
-package com.filling.good.global.error;
+package com.filling.good.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

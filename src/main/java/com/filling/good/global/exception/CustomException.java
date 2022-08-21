@@ -1,4 +1,4 @@
-package com.filling.good.global.error.exception;
+package com.filling.good.global.exception;
 
 import com.filling.good.global.dto.response.ErrorResponse;
 import lombok.Getter;

@@ -1,36 +1,38 @@
 package com.filling.good.domain.user.service;
 
 import com.filling.good.domain.user.dto.request.LoginRequest;
+import com.filling.good.domain.user.dto.request.ReissueRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
-import com.filling.good.domain.user.dto.request.TokenRequest;
-import com.filling.good.domain.user.dto.response.AuthUserResponse;
+import com.filling.good.domain.user.dto.response.TokenResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.entity.User;
 import com.filling.good.domain.user.enumerate.Job;
 import com.filling.good.domain.user.exception.CustomJwtException;
+import com.filling.good.domain.user.exception.InvalidTokenException;
+import com.filling.good.domain.user.exception.LoginRequestException;
 import com.filling.good.domain.user.repository.UserRepository;
-import com.filling.good.global.config.JwtTokenProvider;
+import com.filling.good.global.service.RedisService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
+import java.util.Objects;
 
 import static com.filling.good.domain.user.enumerate.AuthProvider.DEFAULT;
-import static com.filling.good.global.error.ErrorMessage.*;
+import static com.filling.good.global.exception.ErrorMessage.*;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     @Transactional(rollbackOn = {Exception.class})
     public UserResponse join(SignUpRequest signUpRequest) {
@@ -39,6 +41,7 @@ public class AuthService {
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getNickname(),
+                signUpRequest.getName(),
                 Job.findJobCode(signUpRequest.getJobValue()),
                 DEFAULT
         );
@@ -47,23 +50,22 @@ public class AuthService {
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public AuthUserResponse login(LoginRequest loginRequest) {
-        User user = getCheckedUser(loginRequest.getEmail());
+    public TokenResponse defaultLogin(LoginRequest loginRequest) {
+        User user = getUserByEmail(loginRequest.getEmail());
+        if (user.getAuthProvider() != DEFAULT) throw new LoginRequestException();
+
         checkPassword(loginRequest, user);
-
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
-
-        return AuthUserResponse.of(user, accessToken, refreshToken);
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getAuthProvider());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), user.getAuthProvider());
+        return TokenResponse.of(accessToken, refreshToken);
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public AuthUserResponse tokenReIssue(TokenRequest tokenRequest) {
-        User user = getCheckedUser(tokenRequest.getEmail());
-        String refreshToken = validateRefreshToken(tokenRequest);
-        String accessToken = jwtTokenProvider.createAccessToken(tokenRequest.getEmail());
-
-        return AuthUserResponse.of(user, accessToken, refreshToken);
+    public TokenResponse tokenReIssue(ReissueRequest tokenRequest) {
+        User user = getUserByEmail(tokenRequest.getEmail());
+        String refreshToken = getCheckedRefreshToken(tokenRequest, user);
+        String accessToken = jwtTokenProvider.createAccessToken(tokenRequest.getEmail(), user.getAuthProvider());
+        return TokenResponse.of(accessToken, refreshToken);
     }
 
     /*
@@ -76,7 +78,7 @@ public class AuthService {
         }
     }
 
-    private User getCheckedUser(String email) {
+    private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
     }
@@ -87,18 +89,28 @@ public class AuthService {
         }
     }
 
-    private String validateRefreshToken(TokenRequest tokenRequest) {
+    private String getCheckedRefreshToken(ReissueRequest tokenRequest, User user) {
+
+        //리프레쉬 토큰 유효성 체크
         String refreshToken = tokenRequest.getRefreshToken();
-        String email = tokenRequest.getEmail();
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new CustomJwtException(FORBIDDEN, "리프레쉬 토큰");
         }
 
+        //DB에 저장된 refresh 토큰과 일치하는지 체크
+        String email = tokenRequest.getEmail();
+        String storedRefreshToken = redisService.getValues(user.getEmail());
+        if (!Objects.equals(storedRefreshToken, refreshToken)) {
+            throw new InvalidTokenException();
+        }
+
+        //토큰 만료 기간이 2일 이내로 남았을 경우 재발급
         Long remainTime = jwtTokenProvider.calValidTime(refreshToken);
         if (remainTime <= 172800000) {
-            refreshToken = jwtTokenProvider.createRefreshToken(email);
+            refreshToken = jwtTokenProvider.createRefreshToken(email, user.getAuthProvider());
         }
         return refreshToken;
+
     }
 
 }

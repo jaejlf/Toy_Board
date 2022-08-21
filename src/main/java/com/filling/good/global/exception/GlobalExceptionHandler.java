@@ -1,7 +1,6 @@
-package com.filling.good.global.error;
+package com.filling.good.global.exception;
 
 import com.filling.good.global.dto.response.ErrorResponse;
-import com.filling.good.global.error.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

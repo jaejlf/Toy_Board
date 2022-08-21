@@ -1,6 +1,6 @@
 package com.filling.good.domain.user.exception;
 
-import com.filling.good.global.error.exception.CustomException;
+import com.filling.good.global.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
 public class CustomJwtException extends CustomException {

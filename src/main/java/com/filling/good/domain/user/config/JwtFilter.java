@@ -1,6 +1,7 @@
-package com.filling.good.global.config;
+package com.filling.good.domain.user.config;
 
 import com.filling.good.domain.user.exception.InvalidTokenException;
+import com.filling.good.domain.user.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

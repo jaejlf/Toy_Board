@@ -1,7 +1,7 @@
 package com.filling.good.global.Interceptor;
 
 import com.filling.good.domain.user.exception.CustomJwtException;
-import com.filling.good.global.config.JwtTokenProvider;
+import com.filling.good.domain.user.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

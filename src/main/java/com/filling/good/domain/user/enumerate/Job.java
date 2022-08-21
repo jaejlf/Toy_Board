@@ -11,7 +11,8 @@ public enum Job {
     RECRUITER("리크루터", 1),
     FREELANCER("프리랜서", 2),
     DEVELOPER("개발자", 3),
-    ETC("기타", 4);
+    ETC("기타", 4),
+    BLANK("설정 안 함", 5);
 
     private final String jobValue;
     private final int jobCode;
@@ -26,6 +27,8 @@ public enum Job {
                 return FREELANCER;
             case "개발자":
                 return DEVELOPER;
+            case "설정 안 함":
+                return BLANK;
             default:
                 return ETC;
         }
