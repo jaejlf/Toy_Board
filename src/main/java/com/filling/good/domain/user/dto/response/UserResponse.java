@@ -13,6 +13,7 @@ public class UserResponse {
     Long userId;
     String email;
     String nickname;
+    String name;
     Long fillPercent;
     Job job;
     AuthProvider authProvider;
@@ -22,6 +23,7 @@ public class UserResponse {
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
+                .name(user.getName())
                 .fillPercent(user.getFillPercent())
                 .job(user.getJob())
                 .authProvider(user.getAuthProvider())

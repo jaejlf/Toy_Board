@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenRequest {
+public class ReissueRequest {
 
     @NotBlank String email;
     @NotBlank String refreshToken;

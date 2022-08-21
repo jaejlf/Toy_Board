@@ -14,6 +14,7 @@ public class SignUpRequest {
     @NotBlank String email;
     @NotBlank String password;
     @NotBlank String nickname;
+    @NotBlank String name;
     @NotBlank String jobValue;
 
 }

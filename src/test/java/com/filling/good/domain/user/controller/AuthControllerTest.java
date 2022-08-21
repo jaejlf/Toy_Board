@@ -3,24 +3,26 @@ package com.filling.good.domain.user.controller;
 import com.filling.good.CommonTest;
 import com.filling.good.domain.user.dto.request.LoginRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
-import com.filling.good.domain.user.dto.request.TokenRequest;
-import com.filling.good.domain.user.dto.response.AuthUserResponse;
+import com.filling.good.domain.user.dto.request.ReissueRequest;
+import com.filling.good.domain.user.dto.response.TokenResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
-import com.filling.good.domain.user.exception.DuplicateUserException;
-import com.filling.good.domain.user.exception.ExpiredRefreshTokenException;
-import com.filling.good.domain.user.exception.PasswordErrorException;
-import com.filling.good.domain.user.exception.UserNotFoundException;
+import com.filling.good.domain.user.exception.CustomJwtException;
 import com.filling.good.domain.user.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.ResultActions;
+
+import javax.persistence.EntityExistsException;
 
 import static com.filling.good.domain.user.enumerate.AuthProvider.DEFAULT;
 import static com.filling.good.domain.user.enumerate.Job.STUDENT;
+import static com.filling.good.global.exception.ErrorMessage.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -45,6 +47,7 @@ class AuthControllerTest extends CommonTest {
                 "fill@naver.com",
                 "secret1234",
                 "필링굿",
+                "이름이름",
                 "학생"
         );
 
@@ -65,6 +68,7 @@ class AuthControllerTest extends CommonTest {
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("password").description("비밀번호"),
                                 fieldWithPath("nickname").description("닉네임"),
+                                fieldWithPath("name").description("이름"),
                                 fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
                         ),
                         responseFields(
@@ -73,6 +77,7 @@ class AuthControllerTest extends CommonTest {
                                 fieldWithPath("data.userId").description("유저 고유 아이디"),
                                 fieldWithPath("data.email").description("이메일"),
                                 fieldWithPath("data.nickname").description("닉네임"),
+                                fieldWithPath("data.name").description("이름"),
                                 fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
                                 fieldWithPath("data.job").description("직업"),
                                 fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)")
@@ -88,10 +93,11 @@ class AuthControllerTest extends CommonTest {
                 "fill@naver.com",
                 "secret1234",
                 "필링굿",
+                "이름이름",
                 "학생"
         );
 
-        given(authService.join(any())).willThrow(new DuplicateUserException());
+        given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/join")
@@ -101,13 +107,14 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("errName").value("DuplicateUserException"))
+                .andExpect(jsonPath("errName").value("EntityExistsException"))
                 .andDo(print())
                 .andDo(document("auth_join_DuplicateUserException",
                         requestFields(
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("password").description("비밀번호"),
                                 fieldWithPath("nickname").description("닉네임"),
+                                fieldWithPath("name").description("이름"),
                                 fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
                         ),
                         responseFields(
@@ -127,7 +134,7 @@ class AuthControllerTest extends CommonTest {
                 "secret1234"
         );
 
-        given(authService.login(any())).willReturn(authUserResponse());
+        given(authService.defaultLogin(any())).willReturn(authUserResponse());
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -147,12 +154,6 @@ class AuthControllerTest extends CommonTest {
                         responseFields(
                                 fieldWithPath("statusCode").description("상태 코드"),
                                 fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.userId").description("유저 고유 아이디"),
-                                fieldWithPath("data.email").description("이메일"),
-                                fieldWithPath("data.nickname").description("닉네임"),
-                                fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
-                                fieldWithPath("data.job").description("직업"),
-                                fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)"),
                                 fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
                                 fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
                         ))
@@ -168,7 +169,7 @@ class AuthControllerTest extends CommonTest {
                 "secret1234"
         );
 
-        given(authService.login(any())).willThrow(new UserNotFoundException());
+        given(authService.defaultLogin(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -178,7 +179,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("errName").value("UserNotFoundException"))
+                .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
                 .andDo(print())
                 .andDo(document("auth_login_UserNotFoundException",
                         requestFields(
@@ -202,7 +203,7 @@ class AuthControllerTest extends CommonTest {
                 "secret1234"
         );
 
-        given(authService.login(any())).willThrow(new PasswordErrorException());
+        given(authService.defaultLogin(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -212,7 +213,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("errName").value("PasswordErrorException"))
+                .andExpect(jsonPath("errName").value("IllegalArgumentException"))
                 .andDo(print())
                 .andDo(document("auth_login_PasswordErrorException",
                         requestFields(
@@ -231,7 +232,7 @@ class AuthControllerTest extends CommonTest {
     @DisplayName("토큰 재발급 성공")
     void reissue_200() throws Exception {
         //given
-        TokenRequest tokenRequest = new TokenRequest(
+        ReissueRequest tokenRequest = new ReissueRequest(
                 "fill@naver.com",
                 "MOCK_REFRESH_TOKEN"
         );
@@ -256,12 +257,6 @@ class AuthControllerTest extends CommonTest {
                         responseFields(
                                 fieldWithPath("statusCode").description("상태 코드"),
                                 fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.userId").description("유저 고유 아이디"),
-                                fieldWithPath("data.email").description("이메일"),
-                                fieldWithPath("data.nickname").description("닉네임"),
-                                fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
-                                fieldWithPath("data.job").description("직업"),
-                                fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)"),
                                 fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
                                 fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
                         ))
@@ -272,12 +267,12 @@ class AuthControllerTest extends CommonTest {
     @DisplayName("토큰 재발급 실패 (리프레쉬 토큰 만료)")
     void reissue_403() throws Exception {
         //given
-        TokenRequest tokenRequest = new TokenRequest(
+        ReissueRequest tokenRequest = new ReissueRequest(
                 "fill@naver.com",
                 "MOCK_REFRESH_TOKEN"
         );
 
-        given(authService.tokenReIssue(any())).willThrow(new ExpiredRefreshTokenException());
+        given(authService.tokenReIssue(any())).willThrow(new CustomJwtException(FORBIDDEN, "리프레쉬 토큰"));
 
         //when
         ResultActions actions = mockMvc.perform(get("/auth/reissue")
@@ -287,7 +282,7 @@ class AuthControllerTest extends CommonTest {
         //then
         actions
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("errName").value("ExpiredRefreshTokenException"))
+                .andExpect(jsonPath("errName").value("ExpiredJwtException"))
                 .andDo(print())
                 .andDo(document("auth_reissue_ExpiredRefreshTokenException",
                         requestFields(
@@ -306,14 +301,8 @@ class AuthControllerTest extends CommonTest {
     Will Return Object
     */
 
-    private AuthUserResponse authUserResponse() {
-        return AuthUserResponse.builder()
-                .userId(1L)
-                .email("fill@naver.com")
-                .nickname("필링굿")
-                .fillPercent(0L)
-                .job(STUDENT)
-                .authProvider(DEFAULT)
+    private TokenResponse authUserResponse() {
+        return TokenResponse.builder()
                 .accessToken("ACCESS_TOKEN")
                 .refreshToken("REFRESH_TOKEN")
                 .build();

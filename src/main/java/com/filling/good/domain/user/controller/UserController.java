@@ -14,12 +14,12 @@ import static org.springframework.http.HttpStatus.OK;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    
+
     @GetMapping("/info")
     public ResponseEntity<Object> getUserInfo(@AuthenticationPrincipal User user) {
         return ResponseEntity
                 .status(OK)
                 .body(ResultResponse.ok("현재 로그인 된 유저 정보", UserResponse.of(user)));
     }
-    
+
 }

@@ -14,7 +14,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Collection;
 
-import static com.filling.good.domain.user.enumerate.Role.*;
+import static com.filling.good.domain.user.enumerate.Role.ROLE_USER;
 
 @Entity
 @Getter
@@ -33,6 +33,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String nickname;
 
+    private String name;
     private boolean enabled = true;
     private int ban = 0;
     private Long fillPercent = 0L;
@@ -46,10 +47,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
-    public User(String email, String password, String nickname, Job job, AuthProvider authProvider) {
+    public User(String email, String password, String nickname, String name, Job job, AuthProvider authProvider) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.name = name;
         this.job = job;
         this.authProvider = authProvider;
     }

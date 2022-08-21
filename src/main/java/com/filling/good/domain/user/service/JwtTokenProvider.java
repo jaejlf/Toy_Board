@@ -1,5 +1,6 @@
-package com.filling.good.global.config;
+package com.filling.good.domain.user.service;
 
+import com.filling.good.domain.user.enumerate.AuthProvider;
 import com.filling.good.domain.user.exception.InvalidTokenException;
 import com.filling.good.global.service.RedisService;
 import io.jsonwebtoken.*;
@@ -17,8 +18,8 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     @Value("${jwt.secret.key}")
@@ -38,18 +39,20 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createAccessToken(String email) {
-        return createToken(email, accessTokenValidTime);
+    public String createAccessToken(String email, AuthProvider authProvider) {
+        return createToken(email, authProvider, accessTokenValidTime);
     }
 
-    public String createRefreshToken(String email) {
-        String refreshToken = createToken(email, refreshTokenValidTime);
+    public String createRefreshToken(String email, AuthProvider authProvider) {
+        String refreshToken = createToken(email, authProvider, refreshTokenValidTime);
         redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
         return refreshToken;
     }
 
-    public String createToken(String email, Long tokenValidTime) {
+    public String createToken(String email, AuthProvider authProvider, Long tokenValidTime) {
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("provider", authProvider);
+
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)

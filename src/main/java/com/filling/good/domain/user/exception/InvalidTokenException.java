@@ -1,8 +1,8 @@
 package com.filling.good.domain.user.exception;
 
-import com.filling.good.global.error.exception.CustomException;
+import com.filling.good.global.exception.CustomException;
 
-import static com.filling.good.global.enumerate.HttpStatusCode.FORBIDDEN;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 public class InvalidTokenException extends CustomException {
     public InvalidTokenException() {

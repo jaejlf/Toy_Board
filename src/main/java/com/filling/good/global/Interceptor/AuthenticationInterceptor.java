@@ -1,13 +1,15 @@
 package com.filling.good.global.Interceptor;
 
-import com.filling.good.domain.user.exception.ExpiredAccessTokenException;
-import com.filling.good.global.config.JwtTokenProvider;
+import com.filling.good.domain.user.exception.CustomJwtException;
+import com.filling.good.domain.user.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         String token = jwtTokenProvider.resolveToken(request);
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new ExpiredAccessTokenException();
+            throw new CustomJwtException(UNAUTHORIZED, "액세스 토큰");
         }
 
         return true;
