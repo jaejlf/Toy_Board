@@ -61,10 +61,10 @@ public class AuthService {
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public TokenResponse tokenReIssue(ReissueRequest tokenRequest) {
-        User user = getUserByEmail(tokenRequest.getEmail());
-        String refreshToken = getCheckedRefreshToken(tokenRequest, user);
-        String accessToken = jwtTokenProvider.createAccessToken(tokenRequest.getEmail(), user.getAuthProvider());
+    public TokenResponse tokenReIssue(ReissueRequest reissueRequest) {
+        User user = getUserByEmail(reissueRequest.getEmail());
+        String refreshToken = getCheckedRefreshToken(reissueRequest, user);
+        String accessToken = jwtTokenProvider.createAccessToken(reissueRequest.getEmail(), user.getAuthProvider());
         return TokenResponse.of(accessToken, refreshToken);
     }
 
