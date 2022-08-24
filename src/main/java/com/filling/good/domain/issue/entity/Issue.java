@@ -61,4 +61,8 @@ public class Issue {
         this.writer = writer;
     }
 
+    public void changeStatus(IssueStatus status) {
+        this.status = status;
+    }
+
 }

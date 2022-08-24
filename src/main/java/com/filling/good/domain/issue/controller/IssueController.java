@@ -8,12 +8,10 @@ import com.filling.good.global.dto.response.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +27,15 @@ public class IssueController {
         return ResponseEntity
                 .status(CREATED)
                 .body(ResultResponse.create("이슈 발행 완료", issueResponse));
+    }
+
+    @PatchMapping("/change/{issueId}")
+    public ResponseEntity<Object> changeStatus(@PathVariable Long issueId,
+                                               @AuthenticationPrincipal User user) {
+        IssueResponse issueResponse = issueService.changeStatus(issueId, user);
+        return ResponseEntity
+                .status(OK)
+                .body(ResultResponse.ok(issueResponse.getStatus() + " (으)로 상태 변경 완료", issueResponse));
     }
 
 }
