@@ -10,7 +10,6 @@ import com.filling.good.domain.user.exception.CustomJwtException;
 import com.filling.good.domain.user.exception.InvalidTokenException;
 import com.filling.good.domain.user.exception.LoginRequestException;
 import com.filling.good.domain.user.repository.UserRepository;
-import com.filling.good.global.service.RedisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Auth 서비스")
 class AuthServiceTest {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private RedisService redisService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthService authService;
