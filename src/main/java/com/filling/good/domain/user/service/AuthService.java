@@ -55,8 +55,8 @@ public class AuthService {
         if (user.getAuthProvider() != DEFAULT) throw new LoginRequestException();
 
         checkPassword(loginRequest.getPassword(), user.getPassword());
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getAuthProvider());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), user.getAuthProvider());
+        String accessToken = jwtTokenProvider.createAccessToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user);
         return TokenResponse.of(accessToken, refreshToken);
     }
 
@@ -64,7 +64,7 @@ public class AuthService {
     public TokenResponse tokenReIssue(ReissueRequest reissueRequest) {
         User user = getUserByEmail(reissueRequest.getEmail());
         String refreshToken = getCheckedRefreshToken(reissueRequest, user);
-        String accessToken = jwtTokenProvider.createAccessToken(reissueRequest.getEmail(), user.getAuthProvider());
+        String accessToken = jwtTokenProvider.createAccessToken(user);
         return TokenResponse.of(accessToken, refreshToken);
     }
 
@@ -113,7 +113,7 @@ public class AuthService {
         //토큰 만료 기간이 2일 이내로 남았을 경우 재발급
         Long remainTime = jwtTokenProvider.calValidTime(refreshToken);
         if (remainTime <= 172800000) {
-            refreshToken = jwtTokenProvider.createRefreshToken(email, user.getAuthProvider());
+            refreshToken = jwtTokenProvider.createRefreshToken(user);
         }
         return refreshToken;
 
