@@ -54,7 +54,7 @@ public class AuthService {
         User user = getUserByEmail(loginRequest.getEmail());
         if (user.getAuthProvider() != DEFAULT) throw new LoginRequestException();
 
-        checkPassword(loginRequest, user);
+        checkPassword(loginRequest.getPassword(), user.getPassword());
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getAuthProvider());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), user.getAuthProvider());
         return TokenResponse.of(accessToken, refreshToken);
@@ -83,8 +83,8 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
     }
 
-    private void checkPassword(LoginRequest loginRequest, User user) {
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+    private void checkPassword(String inputPw, String userPw) {
+        if (!passwordEncoder.matches(inputPw, userPw)) {
             throw new IllegalArgumentException(PASSWORD_ERROR.getMsg());
         }
     }
