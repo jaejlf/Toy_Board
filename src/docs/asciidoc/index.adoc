@@ -9,7 +9,7 @@ operation::auth_join[snippets='http-request,http-response']
 operation::auth_join[snippets='request-fields,response-fields']
 
 === Exception response
-include::{snippets}/auth_join_DuplicateUserException/http-response.adoc[]
+include::{snippets}/auth_join_EntityExistsException/http-response.adoc[]
 
 == [Auth] DEFAULT 로그인
 operation::auth_defaultLogin[snippets='http-request,http-response']
@@ -17,8 +17,8 @@ operation::auth_defaultLogin[snippets='request-fields,response-fields']
 
 === Exception response
 include::{snippets}/auth_defaultLogin_LoginRequestException/http-response.adoc[]
-include::{snippets}/auth_defaultLogin_PasswordErrorException/http-response.adoc[]
-include::{snippets}/auth_defaultLogin_UserNotFoundException/http-response.adoc[]
+include::{snippets}/auth_defaultLogin_IllegalArgumentException/http-response.adoc[]
+include::{snippets}/auth_defaultLogin_UsernameNotFoundException/http-response.adoc[]
 
 == [Auth] GOOGLE 로그인
 === HTTP request
@@ -51,4 +51,6 @@ operation::auth_reissue[snippets='http-request,http-response']
 operation::auth_reissue[snippets='request-fields,response-fields']
 
 === Exception response
-include::{snippets}/auth_reissue_ExpiredRefreshTokenException/http-response.adoc[]
+include::{snippets}/auth_reissue_ExpiredJwtException/http-response.adoc[]
+include::{snippets}/auth_reissue_InvalidTokenException/http-response.adoc[]
+include::{snippets}/auth_reissue_UsernameNotFoundException/http-response.adoc[]

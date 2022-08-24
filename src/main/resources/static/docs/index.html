@@ -464,12 +464,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /auth/join HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 147
+Content-Length: 153
 Host: FILLing-GOOD-URL
 
 {
   "email" : "fill@naver.com",
-  "password" : "secret1234",
+  "password" : "{{RAW_PASSWORD}}",
   "nickname" : "필링굿",
   "name" : "이름이름",
   "jobValue" : "학생"
@@ -636,12 +636,12 @@ Content-Length: 118
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /auth/login HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 64
+Content-Length: 70
 Host: FILLing-GOOD-URL
 
 {
   "email" : "fill@naver.com",
-  "password" : "secret1234"
+  "password" : "{{RAW_PASSWORD}}"
 }</code></pre>
 </div>
 </div>
@@ -652,14 +652,14 @@ Host: FILLing-GOOD-URL
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 164
+Content-Length: 172
 
 {
   "statusCode" : 200,
   "message" : "DEFAULT 로그인 성공",
   "data" : {
-    "accessToken" : "ACCESS_TOKEN",
-    "refreshToken" : "REFRESH_TOKEN"
+    "accessToken" : "{{ACCESS_TOKEN}}",
+    "refreshToken" : "{{REFRESH_TOKEN}}"
   }
 }</code></pre>
 </div>
@@ -860,12 +860,12 @@ Content-Length: 164
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /auth/reissue HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 76
+Content-Length: 75
 Host: FILLing-GOOD-URL
 
 {
   "email" : "fill@naver.com",
-  "refreshToken" : "MOCK_REFRESH_TOKEN"
+  "refreshToken" : "{{REFRESH_TOKEN}}"
 }</code></pre>
 </div>
 </div>
@@ -876,14 +876,14 @@ Host: FILLing-GOOD-URL
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 163
+Content-Length: 171
 
 {
   "statusCode" : 200,
   "message" : "토큰 재발급 완료",
   "data" : {
-    "accessToken" : "ACCESS_TOKEN",
-    "refreshToken" : "REFRESH_TOKEN"
+    "accessToken" : "{{ACCESS_TOKEN}}",
+    "refreshToken" : "{{REFRESH_TOKEN}}"
   }
 }</code></pre>
 </div>
@@ -972,6 +972,32 @@ Content-Length: 122
 }</code></pre>
 </div>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 403 Forbidden
+Content-Type: application/json;charset=UTF-8
+Content-Length: 111
+
+{
+  "statusCode" : 403,
+  "errName" : "InvalidTokenException",
+  "message" : "잘못된 토큰입니다."
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+Content-Length: 125
+
+{
+  "statusCode" : 404,
+  "errName" : "UsernameNotFoundException",
+  "message" : "가입되지 않은 유저입니다."
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -979,7 +1005,7 @@ Content-Length: 122
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2022-08-22 18:34:17 +0900
+Last updated 2022-08-24 17:11:18 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

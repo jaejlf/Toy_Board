@@ -1,12 +1,12 @@
 package com.filling.good.domain.user.controller;
 
-import com.filling.good.CommonTest;
 import com.filling.good.domain.user.dto.request.LoginRequest;
 import com.filling.good.domain.user.dto.request.ReissueRequest;
 import com.filling.good.domain.user.dto.request.SignUpRequest;
 import com.filling.good.domain.user.dto.response.TokenResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.exception.CustomJwtException;
+import com.filling.good.domain.user.exception.InvalidTokenException;
 import com.filling.good.domain.user.exception.LoginRequestException;
 import com.filling.good.domain.user.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
@@ -35,24 +35,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = AuthController.class)
 @DisplayName("Auth 컨트롤러")
-class AuthControllerTest extends CommonTest {
+class AuthControllerTest extends CommonControllerTest {
 
     @MockBean
     private AuthService authService;
 
-    @Test
     @DisplayName("회원가입 성공")
+    @Test
     void join_201() throws Exception {
         //given
-        SignUpRequest signUpRequest = new SignUpRequest(
-                "fill@naver.com",
-                "secret1234",
-                "필링굿",
-                "이름이름",
-                "학생"
-        );
-
-        given(authService.join(any())).willReturn(userResponse());
+        SignUpRequest signUpRequest = getSignUpRequest();
+        given(authService.join(any())).willReturn(getUserResponse());
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/join")
@@ -86,18 +79,11 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("회원가입 실패 (이미 가입된 유저)")
-    void join_409() throws Exception {
+    @Test
+    void join_EntityExistsException() throws Exception {
         //given
-        SignUpRequest signUpRequest = new SignUpRequest(
-                "fill@naver.com",
-                "secret1234",
-                "필링굿",
-                "이름이름",
-                "학생"
-        );
-
+        SignUpRequest signUpRequest = getSignUpRequest();
         given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
 
         //when
@@ -110,7 +96,7 @@ class AuthControllerTest extends CommonTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("errName").value("EntityExistsException"))
                 .andDo(print())
-                .andDo(document("auth_join_DuplicateUserException",
+                .andDo(document("auth_join_EntityExistsException",
                         requestFields(
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("password").description("비밀번호"),
@@ -126,16 +112,12 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("DEFAULT 로그인 성공")
+    @Test
     void defaultLogin_200() throws Exception {
         //given
-        LoginRequest loginRequest = new LoginRequest(
-                "fill@naver.com",
-                "secret1234"
-        );
-
-        given(authService.defaultLogin(any())).willReturn(tokenResponse());
+        LoginRequest loginRequest = getLoginRequest();
+        given(authService.defaultLogin(any())).willReturn(getTokenResponse());
 
         //when
         ResultActions actions = mockMvc.perform(post("/auth/login")
@@ -161,15 +143,11 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("DEFAULT 로그인 실패 (가입되지 않은 유저)")
-    void defaultLogin_404() throws Exception {
+    @Test
+    void defaultLogin_UsernameNotFoundException() throws Exception {
         //given
-        LoginRequest loginRequest = new LoginRequest(
-                "fill@naver.com",
-                "secret1234"
-        );
-
+        LoginRequest loginRequest = getLoginRequest();
         given(authService.defaultLogin(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
 
         //when
@@ -182,7 +160,7 @@ class AuthControllerTest extends CommonTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
                 .andDo(print())
-                .andDo(document("auth_defaultLogin_UserNotFoundException",
+                .andDo(document("auth_defaultLogin_UsernameNotFoundException",
                         requestFields(
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("password").description("비밀번호")
@@ -195,15 +173,11 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("DEFAULT 로그인 실패 (비밀번호 오류)")
-    void defaultLogin_400() throws Exception {
+    @Test
+    void defaultLogin_IllegalArgumentException() throws Exception {
         //given
-        LoginRequest loginRequest = new LoginRequest(
-                "fill@naver.com",
-                "secret1234"
-        );
-
+        LoginRequest loginRequest = getLoginRequest();
         given(authService.defaultLogin(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
 
         //when
@@ -216,7 +190,7 @@ class AuthControllerTest extends CommonTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errName").value("IllegalArgumentException"))
                 .andDo(print())
-                .andDo(document("auth_defaultLogin_PasswordErrorException",
+                .andDo(document("auth_defaultLogin_IllegalArgumentException",
                         requestFields(
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("password").description("비밀번호")
@@ -229,15 +203,11 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("DEFAULT 로그인 실패 (소셜 로그인으로 가입된 유저일 경우)")
-    void defaultLogin_403() throws Exception {
+    @Test
+    void defaultLogin_LoginRequestException() throws Exception {
         //given
-        LoginRequest loginRequest = new LoginRequest(
-                "fill@naver.com",
-                "secret1234"
-        );
-
+        LoginRequest loginRequest = getLoginRequest();
         given(authService.defaultLogin(any())).willThrow(new LoginRequestException());
 
         //when
@@ -263,16 +233,12 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
-    @Test
     @DisplayName("토큰 재발급 성공")
+    @Test
     void reissue_200() throws Exception {
         //given
-        ReissueRequest tokenRequest = new ReissueRequest(
-                "fill@naver.com",
-                "MOCK_REFRESH_TOKEN"
-        );
-
-        given(authService.tokenReIssue(any())).willReturn(tokenResponse());
+        ReissueRequest tokenRequest = getReissueRequest();
+        given(authService.tokenReIssue(any())).willReturn(getTokenResponse());
 
         //when
         ResultActions actions = mockMvc.perform(get("/auth/reissue")
@@ -298,15 +264,41 @@ class AuthControllerTest extends CommonTest {
                 );
     }
 
+    @DisplayName("토큰 재발급 실패 (가입되지 않은 유저)")
     @Test
-    @DisplayName("토큰 재발급 실패 (리프레쉬 토큰 만료)")
-    void reissue_403() throws Exception {
+    void reissue_UsernameNotFoundException() throws Exception {
         //given
-        ReissueRequest tokenRequest = new ReissueRequest(
-                "fill@naver.com",
-                "MOCK_REFRESH_TOKEN"
-        );
+        ReissueRequest tokenRequest = getReissueRequest();
+        given(authService.tokenReIssue(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
 
+        //when
+        ResultActions actions = mockMvc.perform(get("/auth/reissue")
+                .content(objectMapper.writeValueAsString(tokenRequest))
+                .contentType(APPLICATION_JSON));
+
+        //then
+        actions
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
+                .andDo(print())
+                .andDo(document("auth_reissue_UsernameNotFoundException",
+                        requestFields(
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("statusCode").description("상태 코드"),
+                                fieldWithPath("errName").description("예외 이름"),
+                                fieldWithPath("message").description("예외 메세지")
+                        ))
+                );
+    }
+
+    @DisplayName("토큰 재발급 실패 (리프레쉬 토큰 만료)")
+    @Test
+    void reissue_CustomJwtException() throws Exception {
+        //given
+        ReissueRequest tokenRequest = getReissueRequest();
         given(authService.tokenReIssue(any())).willThrow(new CustomJwtException(FORBIDDEN, "리프레쉬 토큰"));
 
         //when
@@ -319,7 +311,37 @@ class AuthControllerTest extends CommonTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("errName").value("ExpiredJwtException"))
                 .andDo(print())
-                .andDo(document("auth_reissue_ExpiredRefreshTokenException",
+                .andDo(document("auth_reissue_ExpiredJwtException",
+                        requestFields(
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("statusCode").description("상태 코드"),
+                                fieldWithPath("errName").description("예외 이름"),
+                                fieldWithPath("message").description("예외 메세지")
+                        ))
+                );
+    }
+
+    @DisplayName("토큰 재발급 실패 (DB에 저장된 토큰과 불일치)")
+    @Test
+    void reissue_InvalidTokenException() throws Exception {
+        //given
+        ReissueRequest tokenRequest = getReissueRequest();
+        given(authService.tokenReIssue(any())).willThrow(new InvalidTokenException());
+
+        //when
+        ResultActions actions = mockMvc.perform(get("/auth/reissue")
+                .content(objectMapper.writeValueAsString(tokenRequest))
+                .contentType(APPLICATION_JSON));
+
+        //then
+        actions
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("errName").value("InvalidTokenException"))
+                .andDo(print())
+                .andDo(document("auth_reissue_InvalidTokenException",
                         requestFields(
                                 fieldWithPath("email").description("이메일"),
                                 fieldWithPath("refreshToken").description("리프레쉬 토큰")
@@ -336,15 +358,38 @@ class AuthControllerTest extends CommonTest {
     Will Return Object
     */
 
-    private TokenResponse tokenResponse() {
-        return TokenResponse.builder()
-                .accessToken("ACCESS_TOKEN")
-                .refreshToken("REFRESH_TOKEN")
-                .build();
-
+    private SignUpRequest getSignUpRequest() {
+        return new SignUpRequest(
+                "fill@naver.com",
+                "{{RAW_PASSWORD}}",
+                "필링굿",
+                "이름이름",
+                "학생"
+        );
     }
 
-    private UserResponse userResponse() {
+    private LoginRequest getLoginRequest() {
+        return new LoginRequest(
+                "fill@naver.com",
+                "{{RAW_PASSWORD}}"
+        );
+    }
+
+    private ReissueRequest getReissueRequest() {
+        return new ReissueRequest(
+                "fill@naver.com",
+                "{{REFRESH_TOKEN}}"
+        );
+    }
+
+    private TokenResponse getTokenResponse() {
+        return TokenResponse.builder()
+                .accessToken("{{ACCESS_TOKEN}}")
+                .refreshToken("{{REFRESH_TOKEN}}")
+                .build();
+    }
+
+    private UserResponse getUserResponse() {
         return UserResponse.builder()
                 .userId(1L)
                 .email("fill@naver.com")
@@ -353,7 +398,6 @@ class AuthControllerTest extends CommonTest {
                 .job(STUDENT)
                 .authProvider(DEFAULT)
                 .build();
-
     }
 
 }
