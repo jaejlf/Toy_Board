@@ -22,7 +22,7 @@ import static com.filling.good.domain.user.enumerate.Role.ROLE_USER;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String password;
 
