@@ -49,11 +49,11 @@ public class AuthController {
     }
 
     @GetMapping("/reissue")
-    public ResponseEntity<Object> tokenReIssue(@RequestBody ReissueRequest tokenRequest) {
-        TokenResponse user = authService.tokenReIssue(tokenRequest);
+    public ResponseEntity<Object> tokenReIssue(@RequestBody ReissueRequest reissueRequest) {
+        TokenResponse tokenResponse = authService.tokenReIssue(reissueRequest);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.ok("토큰 재발급 완료", user));
+                .body(ResultResponse.ok("토큰 재발급 완료", tokenResponse));
     }
 
 }

@@ -97,6 +97,10 @@ task copyDocument(type: Copy) {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
+
+    filter {
+        includeTestsMatching "*ControllerTest"
+    }
 }
 
 build {

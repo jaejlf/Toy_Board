@@ -1,4 +1,4 @@
-package com.filling.good;
+package com.filling.good.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.filling.good.global.Interceptor.AuthenticationInterceptor;
@@ -19,7 +19,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(uriHost = "FILLing-GOOD-URL", uriPort = 8080)
-public class CommonTest {
+public class CommonControllerTest {
 
     public MockMvc mockMvc;
     public ObjectMapper objectMapper = new ObjectMapper();
