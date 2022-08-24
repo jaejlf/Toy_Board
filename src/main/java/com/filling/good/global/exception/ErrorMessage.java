@@ -9,7 +9,8 @@ public enum ErrorMessage {
 
     USER_ALREADY_EXIST("이미 가입된 유저입니다."),
     USER_NOT_FOUND("가입되지 않은 유저입니다."),
-    PASSWORD_ERROR("잘못된 비밀번호 입니다.");
+    PASSWORD_ERROR("잘못된 비밀번호 입니다."),
+    ISSUE_NOT_FOUND("존재하지 않는 이슈입니다.");
 
     private final String msg;
 

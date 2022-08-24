@@ -26,7 +26,7 @@ public class IssueController {
         IssueResponse issueResponse = issueService.openIssue(issueRequest, user);
         return ResponseEntity
                 .status(CREATED)
-                .body(ResultResponse.create("이슈 발행 완료", issueResponse));
+                .body(ResultResponse.create("이슈 발행", issueResponse));
     }
 
     @PatchMapping("/change/{issueId}")
@@ -35,7 +35,25 @@ public class IssueController {
         IssueResponse issueResponse = issueService.changeStatus(issueId, user);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.ok(issueResponse.getStatus() + " (으)로 상태 변경 완료", issueResponse));
+                .body(ResultResponse.ok(issueResponse.getStatus() + "(으)로 상태 변경", issueResponse));
+    }
+
+    @GetMapping("/{issueId}")
+    public ResponseEntity<Object> getIssueOne(@PathVariable Long issueId,
+                                              @AuthenticationPrincipal User user) {
+        IssueResponse issueResponse = issueService.getIssueOne(issueId, user);
+        return ResponseEntity
+                .status(OK)
+                .body(ResultResponse.ok(issueId + "번 이슈 조회", issueResponse));
+    }
+
+    @DeleteMapping("/{issueId}")
+    public ResponseEntity<Object> deleteIssue(@PathVariable Long issueId,
+                                              @AuthenticationPrincipal User user) {
+        issueService.deleteIssue(issueId, user);
+        return ResponseEntity
+                .status(OK)
+                .body(ResultResponse.ok(issueId + "번 이슈 삭제"));
     }
 
 }
