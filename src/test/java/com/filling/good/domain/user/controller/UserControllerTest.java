@@ -1,5 +1,6 @@
 package com.filling.good.domain.user.controller;
 
+import com.filling.good.support.CommonControllerTest;
 import com.filling.good.domain.user.service.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

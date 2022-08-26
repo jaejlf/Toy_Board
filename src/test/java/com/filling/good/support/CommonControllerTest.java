@@ -1,4 +1,4 @@
-package com.filling.good.domain.user.controller;
+package com.filling.good.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.filling.good.domain.user.entity.User;
@@ -36,7 +36,7 @@ public class CommonControllerTest {
     public AuthenticationInterceptor authenticationInterceptor;
 
     public User user = new User(
-            "filling@naver.com",
+            "fillgood@default.com",
             "{{ENCODED_PASSWORD}}",
             "필링굿",
             "필링굿",

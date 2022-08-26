@@ -7,6 +7,7 @@ import com.filling.good.domain.user.dto.response.TokenResponse;
 import com.filling.good.domain.user.dto.response.UserResponse;
 import com.filling.good.domain.user.entity.User;
 import com.filling.good.domain.user.enumerate.Job;
+import com.filling.good.domain.user.exception.CustomJwtException;
 import com.filling.good.domain.user.exception.InvalidTokenException;
 import com.filling.good.domain.user.exception.LoginRequestException;
 import com.filling.good.domain.user.repository.UserRepository;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 import static com.filling.good.domain.user.enumerate.AuthProvider.DEFAULT;
 import static com.filling.good.global.exception.ErrorMessage.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
 @RequiredArgsConstructor
@@ -97,6 +99,9 @@ public class AuthService {
 
         //리프레쉬 토큰 유효성 체크
         String refreshToken = tokenRequest.getRefreshToken();
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomJwtException(FORBIDDEN, "리프레쉬 토큰");
+        }
 
         //DB에 저장된 refresh 토큰과 일치하는지 체크
         String email = tokenRequest.getEmail();
