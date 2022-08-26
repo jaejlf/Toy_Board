@@ -3,18 +3,20 @@ package com.filling.good.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.filling.good.domain.user.enumerate.AuthProvider;
 import com.filling.good.domain.user.enumerate.Job;
-import com.filling.good.domain.user.enumerate.Role;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
 import java.util.Collection;
-
-import static com.filling.good.domain.user.enumerate.Role.ROLE_USER;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -22,7 +24,7 @@ import static com.filling.good.domain.user.enumerate.Role.ROLE_USER;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String password;
 
@@ -42,9 +44,6 @@ public class User implements UserDetails {
     private Job job;
 
     @Enumerated(EnumType.STRING)
-    private Role role = ROLE_USER;
-
-    @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
     public User(String email, String password, String nickname, String name, Job job, AuthProvider authProvider) {
@@ -54,12 +53,17 @@ public class User implements UserDetails {
         this.name = name;
         this.job = job;
         this.authProvider = authProvider;
+        this.roles = Collections.singletonList("ROLE_USER");
     }
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
+
     @Override
-    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

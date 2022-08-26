@@ -35,8 +35,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> oauthJoin(email, name));
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getAuthProvider());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), user.getAuthProvider());
+        String accessToken = jwtTokenProvider.createAccessToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user);
 
         String targetUrl = UriComponentsBuilder.fromUriString("/auth/login/google")
                 .queryParam("accessToken", accessToken)

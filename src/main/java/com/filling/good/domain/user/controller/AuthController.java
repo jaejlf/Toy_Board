@@ -28,7 +28,7 @@ public class AuthController {
         UserResponse user = authService.join(signUpRequest);
         return ResponseEntity
                 .status(CREATED)
-                .body(ResultResponse.create("회원 가입 성공", user));
+                .body(ResultResponse.create("회원가입", user));
     }
 
     @PostMapping("/login")
@@ -36,7 +36,7 @@ public class AuthController {
         TokenResponse user = authService.defaultLogin(loginRequest);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.ok(DEFAULT + " 로그인 성공", user));
+                .body(ResultResponse.ok(DEFAULT + " 로그인", user));
     }
 
     // {FILLing-GOOD-URL}/oauth2/authorization/google 요청 후 리다이렉트
@@ -45,7 +45,7 @@ public class AuthController {
                                               @RequestParam String refreshToken) {
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.ok(GOOGLE + " 로그인 성공", TokenResponse.of(accessToken, refreshToken)));
+                .body(ResultResponse.ok(GOOGLE + " 로그인", TokenResponse.of(accessToken, refreshToken)));
     }
 
     @GetMapping("/reissue")
@@ -53,7 +53,7 @@ public class AuthController {
         TokenResponse tokenResponse = authService.tokenReIssue(reissueRequest);
         return ResponseEntity
                 .status(OK)
-                .body(ResultResponse.ok("토큰 재발급 완료", tokenResponse));
+                .body(ResultResponse.ok("토큰 재발급", tokenResponse));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.filling.good.domain.user.service;
 
+import com.filling.good.domain.user.entity.User;
 import com.filling.good.domain.user.enumerate.AuthProvider;
 import com.filling.good.domain.user.exception.InvalidTokenException;
 import com.filling.good.global.service.RedisService;
@@ -8,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +30,7 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh.token.valid.time}")
     private long refreshTokenValidTime;
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final RedisService redisService;
 
     @PostConstruct
@@ -39,13 +38,13 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createAccessToken(String email, AuthProvider authProvider) {
-        return createToken(email, authProvider, accessTokenValidTime);
+    public String createAccessToken(User user) {
+        return createToken(user.getEmail(), user.getAuthProvider(), accessTokenValidTime);
     }
 
-    public String createRefreshToken(String email, AuthProvider authProvider) {
-        String refreshToken = createToken(email, authProvider, refreshTokenValidTime);
-        redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
+    public String createRefreshToken(User user) {
+        String refreshToken = createToken(user.getEmail(), user.getAuthProvider(), refreshTokenValidTime);
+        redisService.setValues(user.getEmail(), refreshToken, Duration.ofMillis(refreshTokenValidTime));
         return refreshToken;
     }
 
@@ -63,8 +62,8 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getPayload(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        User user = customUserDetailsService.loadUserByUsername(this.getPayload(token));
+        return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
     }
 
     public String getPayload(String token) {
