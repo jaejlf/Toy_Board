@@ -28,7 +28,7 @@ public class AuthController {
         UserResponse user = authService.join(signUpRequest);
         return ResponseEntity
                 .status(CREATED)
-                .body(ResultResponse.create("회원가입", user));
+                .body(ResultResponse.create("회원 가입", user));
     }
 
     @PostMapping("/login")

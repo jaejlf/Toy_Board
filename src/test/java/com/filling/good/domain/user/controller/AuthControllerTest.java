@@ -10,7 +10,9 @@ import com.filling.good.domain.user.exception.LoginRequestException;
 import com.filling.good.domain.user.service.AuthService;
 import com.filling.good.support.CommonControllerTest;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +30,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,372 +43,352 @@ class AuthControllerTest extends CommonControllerTest {
     @MockBean
     private AuthService authService;
 
-    @DisplayName("회원가입 성공")
-    @Test
-    void join_201() throws Exception {
-        //info
-        String url = "/auth/join";
-        String docIdentifier = "auth_join";
+    @Nested
+    @DisplayName("회원 가입")
+    class JoinTest {
 
-        //given
-        SignUpRequest signUpRequest = getSignUpRequest();
-        given(authService.join(any())).willReturn(getUserResponse());
+        @DisplayName("성공")
+        @Test
+        void join(TestInfo testInfo) throws Exception {
+            //given
+            SignUpRequest signUpRequest = getSignUpRequest();
+            given(authService.join(any())).willReturn(getUserResponse());
 
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(signUpRequest))
-                .contentType(APPLICATION_JSON));
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/join")
+                    .content(objectMapper.writeValueAsString(signUpRequest))
+                    .contentType(APPLICATION_JSON));
 
-        //then
-        actions
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("data").exists())
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호"),
-                                fieldWithPath("nickname").description("닉네임"),
-                                fieldWithPath("name").description("이름"),
-                                fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.userId").description("유저 고유 아이디"),
-                                fieldWithPath("data.email").description("이메일"),
-                                fieldWithPath("data.nickname").description("닉네임"),
-                                fieldWithPath("data.name").description("이름"),
-                                fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
-                                fieldWithPath("data.job").description("직업"),
-                                fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)")
-                        ))
-                );
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("data").exists())
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호"),
+                                    fieldWithPath("nickname").description("닉네임"),
+                                    fieldWithPath("name").description("이름"),
+                                    fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("message").description("결과 메세지"),
+                                    fieldWithPath("data.userId").description("유저 고유 아이디"),
+                                    fieldWithPath("data.email").description("이메일"),
+                                    fieldWithPath("data.nickname").description("닉네임"),
+                                    fieldWithPath("data.name").description("이름"),
+                                    fieldWithPath("data.fillPercent").description("Fill 퍼센테이지"),
+                                    fieldWithPath("data.job").description("직업"),
+                                    fieldWithPath("data.authProvider").description("가입 경로 (DEFAULT/GOOGLE)")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (이미 가입된 유저)")
+        @Test
+        void join_EntityExists(TestInfo testInfo) throws Exception {
+            //given
+            SignUpRequest signUpRequest = getSignUpRequest();
+            given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
+
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/join")
+                    .content(objectMapper.writeValueAsString(signUpRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("errName").value("EntityExistsException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호"),
+                                    fieldWithPath("nickname").description("닉네임"),
+                                    fieldWithPath("name").description("이름"),
+                                    fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
     }
 
-    @DisplayName("회원가입 실패 (이미 가입된 유저)")
-    @Test
-    void join_EntityExistsException() throws Exception {
-        //info
-        String url = "/auth/join";
-        String docIdentifier = "auth_join_EntityExistsException";
+    @Nested
+    @DisplayName("DEFAULT 로그인")
+    class DefaultLoginTest {
 
-        //given
-        SignUpRequest signUpRequest = getSignUpRequest();
-        given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
+        @DisplayName("성공")
+        @Test
+        void defaultLogin(TestInfo testInfo) throws Exception {
+            //given
+            LoginRequest loginRequest = getLoginRequest();
+            given(authService.defaultLogin(any())).willReturn(getTokenResponse());
 
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(signUpRequest))
-                .contentType(APPLICATION_JSON));
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/login")
+                    .content(objectMapper.writeValueAsString(loginRequest))
+                    .contentType(APPLICATION_JSON));
 
-        //then
-        actions
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("errName").value("EntityExistsException"))
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호"),
-                                fieldWithPath("nickname").description("닉네임"),
-                                fieldWithPath("name").description("이름"),
-                                fieldWithPath("jobValue").description("직업 (학생/리크루터/프리랜서/개발자/기타)")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("data").exists())
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("message").description("결과 메세지"),
+                                    fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
+                                    fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (가입되지 않은 유저)")
+        @Test
+        void defaultLogin_UsernameNotFound(TestInfo testInfo) throws Exception {
+            //given
+            LoginRequest loginRequest = getLoginRequest();
+            given(authService.defaultLogin(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
+
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/login")
+                    .content(objectMapper.writeValueAsString(loginRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (비밀번호 오류)")
+        @Test
+        void defaultLogin_IllegalArgument(TestInfo testInfo) throws Exception {
+            //given
+            LoginRequest loginRequest = getLoginRequest();
+            given(authService.defaultLogin(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
+
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/login")
+                    .content(objectMapper.writeValueAsString(loginRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errName").value("IllegalArgumentException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (소셜 로그인으로 가입된 유저일 경우)")
+        @Test
+        void defaultLogin_LoginRequest(TestInfo testInfo) throws Exception {
+            //given
+            LoginRequest loginRequest = getLoginRequest();
+            given(authService.defaultLogin(any())).willThrow(new LoginRequestException());
+
+            //when
+            ResultActions actions = mockMvc.perform(post("/auth/login")
+                    .content(objectMapper.writeValueAsString(loginRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("errName").value("LoginRequestException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("password").description("비밀번호")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
     }
 
-    @DisplayName("DEFAULT 로그인 성공")
-    @Test
-    void defaultLogin_200() throws Exception {
-        //info
-        String url = "/auth/login";
-        String docIdentifier = "auth_defaultLogin";
+    @Nested
+    @DisplayName("토큰 재발급")
+    class ReissueTest {
 
-        //given
-        LoginRequest loginRequest = getLoginRequest();
-        given(authService.defaultLogin(any())).willReturn(getTokenResponse());
+        @DisplayName("성공")
+        @Test
+        void reissue(TestInfo testInfo) throws Exception {
+            //given
+            ReissueRequest tokenRequest = getReissueRequest();
+            given(authService.tokenReIssue(any())).willReturn(getTokenResponse());
 
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(loginRequest))
-                .contentType(APPLICATION_JSON));
+            //when
+            ResultActions actions = mockMvc.perform(get("/auth/reissue")
+                    .content(objectMapper.writeValueAsString(tokenRequest))
+                    .contentType(APPLICATION_JSON));
 
-        //then
-        actions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("data").exists())
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
-                                fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
-                        ))
-                );
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("data").exists())
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("message").description("결과 메세지"),
+                                    fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
+                                    fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (가입되지 않은 유저)")
+        @Test
+        void reissue_UsernameNotFound(TestInfo testInfo) throws Exception {
+            //given
+            ReissueRequest tokenRequest = getReissueRequest();
+            given(authService.tokenReIssue(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
+
+            //when
+            ResultActions actions = mockMvc.perform(get("/auth/reissue")
+                    .content(objectMapper.writeValueAsString(tokenRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
+        @DisplayName("실패 (DB에 저장된 토큰과 불일치)")
+        @Test
+        void reissue_InvalidToken(TestInfo testInfo) throws Exception {
+            //given
+            ReissueRequest tokenRequest = getReissueRequest();
+            given(authService.tokenReIssue(any())).willThrow(new InvalidTokenException());
+
+            //when
+            ResultActions actions = mockMvc.perform(get("/auth/reissue")
+                    .content(objectMapper.writeValueAsString(tokenRequest))
+                    .contentType(APPLICATION_JSON));
+
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("errName").value("InvalidTokenException"))
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestFields(
+                                    fieldWithPath("email").description("이메일"),
+                                    fieldWithPath("refreshToken").description("리프레쉬 토큰")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("errName").description("예외 이름"),
+                                    fieldWithPath("message").description("예외 메세지")
+                            ))
+                    );
+        }
+
     }
 
-    @DisplayName("DEFAULT 로그인 실패 (가입되지 않은 유저)")
-    @Test
-    void defaultLogin_UsernameNotFoundException() throws Exception {
-        //info
-        String url = "/auth/login";
-        String docIdentifier = "auth_defaultLogin_UsernameNotFoundException";
+    @Nested
+    @DisplayName("GOOGLE 로그인")
+    class GoogleLoginTest {
 
-        //given
-        LoginRequest loginRequest = getLoginRequest();
-        given(authService.defaultLogin(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
+        @DisplayName("구글 접속")
+        @Test
+        void googleLogin_link(TestInfo testInfo) throws Exception {
+            //given & when & then
+            ResultActions actions = mockMvc.perform(get("/oauth2/authorization/google")
+                    .contentType(APPLICATION_JSON));
 
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(loginRequest))
-                .contentType(APPLICATION_JSON));
+            //then
+            actions
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName()));
+        }
 
-        //then
-        actions
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
-    }
+        @DisplayName("리다이렉트")
+        @Test
+        void googleLogin_redirect(TestInfo testInfo) throws Exception {
+            //given & when
+            ResultActions actions = mockMvc.perform(get("/auth/login/google")
+                    .param("accessToken", "{{ACCESS_TOKEN}}")
+                    .param("refreshToken", "{{REFRESH_TOKEN}}")
+                    .contentType(APPLICATION_JSON));
 
-    @DisplayName("DEFAULT 로그인 실패 (비밀번호 오류)")
-    @Test
-    void defaultLogin_IllegalArgumentException() throws Exception {
-        //info
-        String url = "/auth/login";
-        String docIdentifier = "auth_defaultLogin_IllegalArgumentException";
+            //then
+            actions
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("data").exists())
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
+                            requestParameters(
+                                    parameterWithName("accessToken").description("구글 로그인 액세스 토큰"),
+                                    parameterWithName("refreshToken").description("구글 로그인 리프레쉬 토큰")
+                            ),
+                            responseFields(
+                                    fieldWithPath("statusCode").description("상태 코드"),
+                                    fieldWithPath("message").description("결과 메세지"),
+                                    fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
+                                    fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
+                            ))
+                    );
+        }
 
-        //given
-        LoginRequest loginRequest = getLoginRequest();
-        given(authService.defaultLogin(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
-
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(loginRequest))
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("errName").value("IllegalArgumentException"))
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
-    }
-
-    @DisplayName("DEFAULT 로그인 실패 (소셜 로그인으로 가입된 유저일 경우)")
-    @Test
-    void defaultLogin_LoginRequestException() throws Exception {
-        //info
-        String url = "/auth/login";
-        String docIdentifier = "auth_defaultLogin_LoginRequestException";
-
-        //given
-        LoginRequest loginRequest = getLoginRequest();
-        given(authService.defaultLogin(any())).willThrow(new LoginRequestException());
-
-        //when
-        ResultActions actions = mockMvc.perform(post(url)
-                .content(objectMapper.writeValueAsString(loginRequest))
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("errName").value("LoginRequestException"))
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("password").description("비밀번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
-    }
-
-    @DisplayName("토큰 재발급 성공")
-    @Test
-    void reissue_200() throws Exception {
-        //info
-        String url = "/auth/reissue";
-        String docIdentifier = "auth_reissue";
-
-        //given
-        ReissueRequest tokenRequest = getReissueRequest();
-        given(authService.tokenReIssue(any())).willReturn(getTokenResponse());
-
-        //when
-        ResultActions actions = mockMvc.perform(get(url)
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("data").exists())
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("refreshToken").description("리프레쉬 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
-                                fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
-                        ))
-                );
-    }
-
-    @DisplayName("토큰 재발급 실패 (가입되지 않은 유저)")
-    @Test
-    void reissue_UsernameNotFoundException() throws Exception {
-        //info
-        String url = "/auth/reissue";
-        String docIdentifier = "auth_reissue_UsernameNotFoundException";
-
-        //given
-        ReissueRequest tokenRequest = getReissueRequest();
-        given(authService.tokenReIssue(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
-
-        //when
-        ResultActions actions = mockMvc.perform(get(url)
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("refreshToken").description("리프레쉬 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
-    }
-
-    @DisplayName("토큰 재발급 실패 (DB에 저장된 토큰과 불일치)")
-    @Test
-    void reissue_InvalidTokenException() throws Exception {
-        //info
-        String url = "/auth/reissue";
-        String docIdentifier = "auth_reissue_InvalidTokenException";
-
-        //given
-        ReissueRequest tokenRequest = getReissueRequest();
-        given(authService.tokenReIssue(any())).willThrow(new InvalidTokenException());
-
-        //when
-        ResultActions actions = mockMvc.perform(get(url)
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("errName").value("InvalidTokenException"))
-                .andDo(print())
-                .andDo(document("auth_reissue_InvalidTokenException",
-                        requestFields(
-                                fieldWithPath("email").description("이메일"),
-                                fieldWithPath("refreshToken").description("리프레쉬 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("errName").description("예외 이름"),
-                                fieldWithPath("message").description("예외 메세지")
-                        ))
-                );
-    }
-
-    @DisplayName("GOOGLE 로그인 성공")
-    @Test
-    void googleLogin_link() throws Exception {
-        //info
-        String url = "/oauth2/authorization/google";
-        String docIdentifier = "auth_googleLogin_link";
-
-        //given & when & then
-        ResultActions actions = mockMvc.perform(get(url)
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andDo(document(docIdentifier));
-    }
-
-    @DisplayName("GOOGLE 로그인 성공")
-    @Test
-    void googleLogin_redirect() throws Exception {
-        //info
-        String url = "/auth/login/google";
-        String docIdentifier = "auth_googleLogin_redirect";
-
-        //given & when
-        ResultActions actions = mockMvc.perform(get(url)
-                .param("accessToken", "{{ACCESS_TOKEN}}")
-                .param("refreshToken", "{{REFRESH_TOKEN}}")
-                .contentType(APPLICATION_JSON));
-
-        //then
-        actions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("data").exists())
-                .andDo(print())
-                .andDo(document(docIdentifier,
-                        requestParameters(
-                                parameterWithName("accessToken").description("구글 로그인 액세스 토큰"),
-                                parameterWithName("refreshToken").description("구글 로그인 리프레쉬 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("statusCode").description("상태 코드"),
-                                fieldWithPath("message").description("결과 메세지"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰 (유효 시간 30분)"),
-                                fieldWithPath("data.refreshToken").description("리프레쉬 토큰 (유효 시간 30일)")
-                        ))
-                );
     }
 
     /*

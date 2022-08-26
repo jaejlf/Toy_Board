@@ -4,6 +4,7 @@ import com.filling.good.support.CommonControllerTest;
 import com.filling.good.domain.user.service.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,7 +25,7 @@ class UserControllerTest extends CommonControllerTest {
 
     @DisplayName("현재 로그인된 유저 정보 조회")
     @Test
-    void getUserInfo_200() throws Exception {
+    void getUserInfo(TestInfo testInfo) throws Exception {
         //given & when
         ResultActions actions = mockMvc.perform(get("/user/info")
                 .header("X-AUTH-TOKEN", "{{ACCESS_TOKEN}}")
@@ -32,9 +33,9 @@ class UserControllerTest extends CommonControllerTest {
 
         //then
         actions
-                .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("user_getUserInfo",
+                .andExpect(status().isOk())
+                .andDo(document("/user/" + testInfo.getTestMethod().get().getName(),
                         responseFields(
                                 fieldWithPath("statusCode").description("상태 코드"),
                                 fieldWithPath("message").description("결과 메세지"),

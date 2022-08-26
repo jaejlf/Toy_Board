@@ -5,37 +5,73 @@ endif::[]
 = 💬 FILLing - GOOD
 
 == [Auth] 회원가입
-operation::auth_join[snippets='http-request,http-response']
-operation::auth_join[snippets='request-fields,response-fields']
+operation::auth/join[snippets='http-request,http-response']
+operation::auth/join[snippets='request-fields,response-fields']
 
 === Exception response
-include::{snippets}/auth_join_EntityExistsException/http-response.adoc[]
+include::{snippets}/auth/join_EntityExists/http-response.adoc[]
 
 == [Auth] DEFAULT 로그인
-operation::auth_defaultLogin[snippets='http-request,http-response']
-operation::auth_defaultLogin[snippets='request-fields,response-fields']
+operation::auth/defaultLogin[snippets='http-request,http-response']
+operation::auth/defaultLogin[snippets='request-fields,response-fields']
 
 === Exception response
-include::{snippets}/auth_defaultLogin_IllegalArgumentException/http-response.adoc[]
-include::{snippets}/auth_defaultLogin_LoginRequestException/http-response.adoc[]
-include::{snippets}/auth_defaultLogin_UsernameNotFoundException/http-response.adoc[]
+include::{snippets}/auth/defaultLogin_IllegalArgument/http-response.adoc[]
+include::{snippets}/auth/defaultLogin_LoginRequest/http-response.adoc[]
+include::{snippets}/auth/defaultLogin_UsernameNotFound/http-response.adoc[]
 
 == [Auth] GOOGLE 로그인
 === HTTP request
-include::{snippets}/auth_googleLogin/http-request.adoc[]
+include::{snippets}/auth/googleLogin_link/http-request.adoc[]
 
 === HTTP response
-include::{snippets}/auth_googleLogin_redirect/http-response.adoc[]
-include::{snippets}/auth_googleLogin_redirect/response-fields.adoc[]
+include::{snippets}/auth/googleLogin_redirect/http-response.adoc[]
+include::{snippets}/auth/googleLogin_redirect/response-fields.adoc[]
 
 == [Auth] 토큰 재발급
-operation::auth_reissue[snippets='http-request,http-response']
-operation::auth_reissue[snippets='request-fields,response-fields']
+operation::auth/reissue[snippets='http-request,http-response']
+operation::auth/reissue[snippets='request-fields,response-fields']
 
 === Exception response
-include::{snippets}/auth_reissue_InvalidTokenException/http-response.adoc[]
-include::{snippets}/auth_reissue_UsernameNotFoundException/http-response.adoc[]
+include::{snippets}/auth/reissue_InvalidToken/http-response.adoc[]
+include::{snippets}/auth/reissue_UsernameNotFound/http-response.adoc[]
 
 == [User] 현재 로그인된 유저 정보
-operation::user_getUserInfo[snippets='http-request,http-response']
-operation::user_getUserInfo[snippets='response-fields']
+operation::user/getUserInfo[snippets='http-request,http-response']
+operation::user/getUserInfo[snippets='response-fields']
+
+== [Issue] 이슈 발행
+operation::issue/openIssue[snippets='http-request,http-response']
+operation::issue/openIssue[snippets='request-fields,response-fields']
+
+== [Issue] 이슈 상태 변경
+operation::issue/changeStatus[snippets='http-request,http-response']
+operation::issue/changeStatus[snippets='path-parameters,response-fields']
+
+=== Exception response
+include::{snippets}/issue/changeStatus_EntityNotFound/http-response.adoc[]
+include::{snippets}/issue/changeStatus_NoAuth/http-response.adoc[]
+
+== [Issue] 특정 이슈 조회
+operation::issue/getIssueOne[snippets='http-request,http-response']
+operation::issue/getIssueOne[snippets='path-parameters,response-fields']
+
+=== Exception response
+include::{snippets}/issue/getIssueOne_EntityNotFound/http-response.adoc[]
+include::{snippets}/issue/getIssueOne_NoAuth/http-response.adoc[]
+
+== [Issue] 특정 이슈 삭제
+operation::issue/deleteIssue[snippets='http-request,http-response']
+operation::issue/deleteIssue[snippets='path-parameters,response-fields']
+
+=== Exception response
+include::{snippets}/issue/deleteIssue_EntityNotFound/http-response.adoc[]
+include::{snippets}/issue/deleteIssue_NoAuth/http-response.adoc[]
+
+== [Issue] 특정 유저가 작성한 이슈 목록 조회
+operation::issue/getIssueByUserId[snippets='http-request,http-response']
+operation::issue/getIssueByUserId[snippets='path-parameters,response-fields']
+
+== [Issue] 특정 카테고리의 이슈 목록 조회
+operation::issue/getIssueByCategory[snippets='http-request,http-response']
+operation::issue/getIssueByCategory[snippets='path-parameters,response-fields']
