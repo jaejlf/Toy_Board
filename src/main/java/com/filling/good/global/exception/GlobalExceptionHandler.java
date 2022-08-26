@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -41,6 +42,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(CONFLICT)
                 .body(ErrorResponse.error(CONFLICT.value(), e.getClass().getSimpleName(), e.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> entityNotFoundExceptionHandler(EntityNotFoundException e) {
+        errorLogging(e);
+        return ResponseEntity
+                .status(NOT_FOUND)
+                .body(ErrorResponse.error(NOT_FOUND.value(), e.getClass().getSimpleName(), e.getMessage()));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
