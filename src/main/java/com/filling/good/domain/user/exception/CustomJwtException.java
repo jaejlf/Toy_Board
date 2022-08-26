@@ -1,10 +1,11 @@
 package com.filling.good.domain.user.exception;
 
 import com.filling.good.global.exception.CustomException;
-import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class CustomJwtException extends CustomException {
-    public CustomJwtException(HttpStatus httpStatus, String tokenName) {
-        super(httpStatus, "ExpiredJwtException", "만료된 " + tokenName + "입니다.");
+    public CustomJwtException() {
+        super(UNAUTHORIZED, "ExpiredJwtException", "만료된 액세스 토큰입니다.");
     }
 }

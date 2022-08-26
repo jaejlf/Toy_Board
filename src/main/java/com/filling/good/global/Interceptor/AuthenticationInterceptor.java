@@ -9,8 +9,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 @Component
 @RequiredArgsConstructor
 public class AuthenticationInterceptor implements HandlerInterceptor {
@@ -22,7 +20,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         String token = jwtTokenProvider.resolveToken(request);
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new CustomJwtException(UNAUTHORIZED, "액세스 토큰");
+            throw new CustomJwtException();
         }
 
         return true;
