@@ -8,7 +8,6 @@ import com.filling.good.support.CommonControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -91,7 +90,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void changeStatus(TestInfo testInfo) throws Exception {
+        void changeStatus() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.changeStatus(any(), any())).willReturn(getIssueResponse());
@@ -128,7 +127,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (존재하지 않는 이슈)")
         @Test
-        void changeStatus_EntityNotFound(TestInfo testInfo) throws Exception {
+        void changeStatus_EntityNotFound() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.changeStatus(any(), any())).willThrow(new EntityNotFoundException(ISSUE_NOT_FOUND.getMsg()));
@@ -143,7 +142,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("errName").value("EntityNotFoundException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "changeStatus_EntityNotFound",
                             pathParameters(
                                     parameterWithName("issueId").description("상태를 변경할 이슈의 아이디")
                             ),
@@ -157,7 +156,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (권한이 없는 유저)")
         @Test
-        void changeStatus_NoAuth(TestInfo testInfo) throws Exception {
+        void changeStatus_NoAuth() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.changeStatus(any(), any())).willThrow(new NoAuthException());
@@ -172,7 +171,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errName").value("NoAuthException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "changeStatus_NoAuth",
                             pathParameters(
                                     parameterWithName("issueId").description("상태를 변경할 이슈의 아이디")
                             ),
@@ -192,7 +191,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void getIssueOne(TestInfo testInfo) throws Exception {
+        void getIssueOne() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.getIssueOne(any(), any())).willReturn(getIssueResponse());
@@ -207,7 +206,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "getIssueOne",
                             pathParameters(
                                     parameterWithName("issueId").description("조회할 이슈의 아이디")
                             ),
@@ -229,7 +228,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (존재하지 않는 이슈)")
         @Test
-        void getIssueOne_EntityNotFound(TestInfo testInfo) throws Exception {
+        void getIssueOne_EntityNotFound() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.getIssueOne(any(), any())).willThrow(new EntityNotFoundException(ISSUE_NOT_FOUND.getMsg()));
@@ -244,7 +243,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("errName").value("EntityNotFoundException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "getIssueOne_EntityNotFound",
                             pathParameters(
                                     parameterWithName("issueId").description("조회할 이슈의 아이디")
                             ),
@@ -258,7 +257,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (권한이 없는 유저)")
         @Test
-        void getIssueOne_NoAuth(TestInfo testInfo) throws Exception {
+        void getIssueOne_NoAuth() throws Exception {
             //given
             long issueId = 1L;
             given(issueService.getIssueOne(any(), any())).willThrow(new NoAuthException());
@@ -273,7 +272,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errName").value("NoAuthException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "getIssueOne_NoAuth",
                             pathParameters(
                                     parameterWithName("issueId").description("조회할 이슈의 아이디")
                             ),
@@ -293,7 +292,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void deleteIssue(TestInfo testInfo) throws Exception {
+        void deleteIssue() throws Exception {
             //given
             long issueId = 1L;
 
@@ -306,7 +305,7 @@ class IssueControllerTest extends CommonControllerTest {
             actions
                     .andDo(print())
                     .andExpect(status().isOk())
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "deleteIssue",
                             pathParameters(
                                     parameterWithName("issueId").description("삭제할 이슈의 아이디")
                             ),
@@ -320,7 +319,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (존재하지 않는 이슈)")
         @Test
-        void deleteIssue_EntityNotFound(TestInfo testInfo) throws Exception {
+        void deleteIssue_EntityNotFound() throws Exception {
             //given
             long issueId = 1L;
             doThrow(new EntityNotFoundException(ISSUE_NOT_FOUND.getMsg())).when(issueService).deleteIssue(any(), any());
@@ -335,7 +334,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("errName").value("EntityNotFoundException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "deleteIssue_EntityNotFound",
                             pathParameters(
                                     parameterWithName("issueId").description("삭제할 이슈의 아이디")
                             ),
@@ -349,7 +348,7 @@ class IssueControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (권한이 없는 유저)")
         @Test
-        void deleteIssue_NoAuth(TestInfo testInfo) throws Exception {
+        void deleteIssue_NoAuth() throws Exception {
             //given
             long issueId = 1L;
             doThrow(new NoAuthException()).when(issueService).deleteIssue(any(), any());
@@ -364,7 +363,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errName").value("NoAuthException"))
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "deleteIssue_NoAuth",
                             pathParameters(
                                     parameterWithName("issueId").description("조회할 이슈의 아이디")
                             ),
@@ -380,7 +379,7 @@ class IssueControllerTest extends CommonControllerTest {
 
     @DisplayName("특정 유저가 작성한 이슈 목록 조회")
     @Test
-    void getIssueByUserId(TestInfo testInfo) throws Exception {
+    void getIssueByUserId() throws Exception {
         //given
         long userId = 1L;
         given(issueService.getIssueByUserId(any(), any())).willReturn(getIssueResponseList());
@@ -395,7 +394,7 @@ class IssueControllerTest extends CommonControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("data").exists())
-                .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                .andDo(document("/issue/" + "getIssueByUserId",
                         pathParameters(
                                 parameterWithName("userId").description("조회할 유저의 아이디")
                         ),
@@ -409,7 +408,7 @@ class IssueControllerTest extends CommonControllerTest {
 
     @DisplayName("특정 카테고리의 이슈 목록 조회")
     @Test
-    void getIssueByCategory(TestInfo testInfo) throws Exception {
+    void getIssueByCategory() throws Exception {
         //given
         String category = "SERVER";
         given(issueService.getIssueByCategory(any(), any())).willReturn(getIssueResponseList());
@@ -424,7 +423,7 @@ class IssueControllerTest extends CommonControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("data").exists())
-                .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                .andDo(document("/issue/" + "getIssueByCategory",
                         pathParameters(
                                 parameterWithName("category").description("조회할 카테고리 (WEB, APP, SERVER, DEVOPS, ETC)")
                         ),

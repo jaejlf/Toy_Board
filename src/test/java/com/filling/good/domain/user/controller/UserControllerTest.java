@@ -1,10 +1,9 @@
 package com.filling.good.domain.user.controller;
 
-import com.filling.good.support.CommonControllerTest;
 import com.filling.good.domain.user.service.JwtTokenProvider;
+import com.filling.good.support.CommonControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
@@ -12,7 +11,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +25,7 @@ class UserControllerTest extends CommonControllerTest {
 
     @DisplayName("현재 로그인된 유저 정보 조회")
     @Test
-    void getUserInfo(TestInfo testInfo) throws Exception {
+    void getUserInfo() throws Exception {
         //given & when
         ResultActions actions = mockMvc.perform(get("/user/info")
                 .header("X-AUTH-TOKEN", "{{ACCESS_TOKEN}}")
@@ -35,7 +35,7 @@ class UserControllerTest extends CommonControllerTest {
         actions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("/user/" + testInfo.getTestMethod().get().getName(),
+                .andDo(document("/user/" + "getUserInfo",
                         responseFields(
                                 fieldWithPath("statusCode").description("상태 코드"),
                                 fieldWithPath("message").description("결과 메세지"),
