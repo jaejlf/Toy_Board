@@ -12,6 +12,7 @@ import com.filling.good.support.CommonControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,7 +49,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void join() throws Exception {
+        void join(TestInfo testInfo) throws Exception {
             //given
             SignUpRequest signUpRequest = getSignUpRequest();
             given(authService.join(any())).willReturn(getUserResponse());
@@ -63,7 +64,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/auth/" + "join",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호"),
@@ -87,7 +88,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (이미 가입된 유저)")
         @Test
-        void join_EntityExists() throws Exception {
+        void join_EntityExists(TestInfo testInfo) throws Exception {
             //given
             SignUpRequest signUpRequest = getSignUpRequest();
             given(authService.join(any())).willThrow(new EntityExistsException(USER_ALREADY_EXIST.getMsg()));
@@ -102,7 +103,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isConflict())
                     .andExpect(jsonPath("errName").value("EntityExistsException"))
-                    .andDo(document("/auth/" + "join_EntityExists",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호"),
@@ -126,7 +127,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void defaultLogin() throws Exception {
+        void defaultLogin(TestInfo testInfo) throws Exception {
             //given
             LoginRequest loginRequest = getLoginRequest();
             given(authService.defaultLogin(any())).willReturn(getTokenResponse());
@@ -141,7 +142,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/auth/" + "defaultLogin",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호")
@@ -157,7 +158,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (가입되지 않은 유저)")
         @Test
-        void defaultLogin_UsernameNotFound() throws Exception {
+        void defaultLogin_UsernameNotFound(TestInfo testInfo) throws Exception {
             //given
             LoginRequest loginRequest = getLoginRequest();
             given(authService.defaultLogin(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
@@ -172,7 +173,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
-                    .andDo(document("/auth/" + "defaultLogin_UsernameNotFound",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호")
@@ -187,7 +188,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (비밀번호 오류)")
         @Test
-        void defaultLogin_IllegalArgument() throws Exception {
+        void defaultLogin_IllegalArgument(TestInfo testInfo) throws Exception {
             //given
             LoginRequest loginRequest = getLoginRequest();
             given(authService.defaultLogin(any())).willThrow(new IllegalArgumentException(PASSWORD_ERROR.getMsg()));
@@ -202,7 +203,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errName").value("IllegalArgumentException"))
-                    .andDo(document("/auth/" + "defaultLogin_IllegalArgument",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호")
@@ -217,7 +218,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (소셜 로그인으로 가입된 유저일 경우)")
         @Test
-        void defaultLogin_LoginRequest() throws Exception {
+        void defaultLogin_LoginRequest(TestInfo testInfo) throws Exception {
             //given
             LoginRequest loginRequest = getLoginRequest();
             given(authService.defaultLogin(any())).willThrow(new LoginRequestException());
@@ -232,7 +233,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isForbidden())
                     .andExpect(jsonPath("errName").value("LoginRequestException"))
-                    .andDo(document("/auth/" + "defaultLogin_LoginRequest",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("password").description("비밀번호")
@@ -253,7 +254,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("성공")
         @Test
-        void reissue() throws Exception {
+        void reissue(TestInfo testInfo) throws Exception {
             //given
             ReissueRequest tokenRequest = getReissueRequest();
             given(authService.tokenReIssue(any())).willReturn(getTokenResponse());
@@ -268,7 +269,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/auth/" + "reissue",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("refreshToken").description("리프레쉬 토큰")
@@ -284,7 +285,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (가입되지 않은 유저)")
         @Test
-        void reissue_UsernameNotFound() throws Exception {
+        void reissue_UsernameNotFound(TestInfo testInfo) throws Exception {
             //given
             ReissueRequest tokenRequest = getReissueRequest();
             given(authService.tokenReIssue(any())).willThrow(new UsernameNotFoundException(USER_NOT_FOUND.getMsg()));
@@ -299,7 +300,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("errName").value("UsernameNotFoundException"))
-                    .andDo(document("/auth/" + "reissue_UsernameNotFound",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("refreshToken").description("리프레쉬 토큰")
@@ -314,7 +315,7 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("실패 (DB에 저장된 토큰과 불일치)")
         @Test
-        void reissue_InvalidToken() throws Exception {
+        void reissue_InvalidToken(TestInfo testInfo) throws Exception {
             //given
             ReissueRequest tokenRequest = getReissueRequest();
             given(authService.tokenReIssue(any())).willThrow(new InvalidTokenException());
@@ -329,7 +330,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isForbidden())
                     .andExpect(jsonPath("errName").value("InvalidTokenException"))
-                    .andDo(document("/auth/" + "reissue_InvalidToken",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestFields(
                                     fieldWithPath("email").description("이메일"),
                                     fieldWithPath("refreshToken").description("리프레쉬 토큰")
@@ -350,19 +351,19 @@ class AuthControllerTest extends CommonControllerTest {
 
         @DisplayName("구글 접속")
         @Test
-        void googleLogin_link() throws Exception {
+        void googleLogin_link(TestInfo testInfo) throws Exception {
             //given & when & then
             ResultActions actions = mockMvc.perform(get("/oauth2/authorization/google")
                     .contentType(APPLICATION_JSON));
 
             //then
             actions
-                    .andDo(document("/auth/" + "googleLogin_link"));
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName()));
         }
 
         @DisplayName("리다이렉트")
         @Test
-        void googleLogin_redirect() throws Exception {
+        void googleLogin_redirect(TestInfo testInfo) throws Exception {
             //given & when
             ResultActions actions = mockMvc.perform(get("/auth/login/google")
                     .param("accessToken", "{{ACCESS_TOKEN}}")
@@ -374,7 +375,7 @@ class AuthControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/auth/" + "googleLogin_redirect",
+                    .andDo(document("/auth/" + testInfo.getTestMethod().get().getName(),
                             requestParameters(
                                     parameterWithName("accessToken").description("구글 로그인 액세스 토큰"),
                                     parameterWithName("refreshToken").description("구글 로그인 리프레쉬 토큰")
