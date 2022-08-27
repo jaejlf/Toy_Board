@@ -46,7 +46,7 @@ class IssueControllerTest extends CommonControllerTest {
 
     @DisplayName("이슈 발행")
     @Test
-    void openIssue(TestInfo testInfo) throws Exception {
+    void openIssue() throws Exception {
         //given
         IssueRequest issueRequest = getIssueRequest();
         given(issueService.openIssue(any(), any())).willReturn(getIssueResponse());
@@ -62,7 +62,7 @@ class IssueControllerTest extends CommonControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("data").exists())
-                .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                .andDo(document("/issue/" + "openIssue",
                         requestFields(
                                 fieldWithPath("title").description("이슈 제목"),
                                 fieldWithPath("content").description("이슈 내용"),
@@ -106,7 +106,7 @@ class IssueControllerTest extends CommonControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("data").exists())
-                    .andDo(document("/issue/" + testInfo.getTestMethod().get().getName(),
+                    .andDo(document("/issue/" + "changeStatus",
                             pathParameters(
                                     parameterWithName("issueId").description("상태를 변경할 이슈의 아이디")
                             ),
