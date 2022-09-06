@@ -1,8 +1,0 @@
-spring:
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-  session:
-    store-type: jdbc
-
-server:
-  port: 8082
