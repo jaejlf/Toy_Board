@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPOSITORY=/home/ec2-user/app
-PROJECT_NAME=FIILing_GOOD
+PROJECT_NAME=FIILing_GOOD_BE
 
 echo "> Build 파일 복사"
 
