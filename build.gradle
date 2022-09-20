@@ -94,6 +94,11 @@ task copyDocument(type: Copy) {
     into file("src/main/resources/static/docs")
 }
 
+task copyDocumentShow(type: Copy) {
+    from file("src/main/resources/static/docs")
+    into file("./")
+}
+
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
@@ -105,4 +110,5 @@ tasks.named('test') {
 
 build {
     dependsOn copyDocument
+    dependsOn copyDocumentShow
 }
